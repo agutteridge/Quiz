@@ -1,3 +1,5 @@
+package Quiz;
+
 import java.util.UUID;
 /**
 * A Score object that contains data about the player, the score achieved and 
