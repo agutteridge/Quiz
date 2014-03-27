@@ -1,23 +1,21 @@
-package Quiz;
-
 import java.util.UUID;
 /**
 * A Score object that contains data about the player, the score achieved and 
 * the quiz played.
 */
-public class Score extends Comparable {
-	private final Player player;
-	private final int scoreNum;
-	private final UUID quizID;
+public class Score implements Comparable {
+	// private final UUID player;
+	private final int points;
+	// private final UUID quizID;
 
-	public Score(Player p, int s, UUID q){
-		player = p;
-		scoreNum = s;
-		quizID = q;
+	public Score(int s){
+		// player = p;
+		points = s;
+		// quizID = q;
 	}
 
-	public int getScore(){
-		return scoreNum;
+	public int getPoints(){
+		return points;
 	}
 
 	/**
@@ -37,17 +35,18 @@ public class Score extends Comparable {
 			throw new NullPointerException();
 		} 
 
+		Score s;
 		if (o instanceof Score){
-			Score s = (Score) o; 
+			s = (Score) o; 
 		} else {
 			throw new ClassCastException();
 		}
 
-		int compareScore = s.getScore();
+		int comparePoints = s.getPoints();
 
-		if (scoreNum == compareScore){
+		if (points == comparePoints){
 			return 0;
-		} else if (scoreNum > compareScore){
+		} else if (points > comparePoints){
 			return 1;
 		} else {
 			return -1;
