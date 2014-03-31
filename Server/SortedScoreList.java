@@ -9,11 +9,14 @@ import java.util.ListIterator;
 public class SortedScoreList extends AbstractSequentialList {
 	List<Score> list;
 
+	public SortedScoreList(){
+		list = new LinkedList<Score>();		
+	}
+
 	public boolean add(Score newScore){
 		boolean inserted = false;
 
-		if(list == null){
-			list = new LinkedList<Score>();
+		if(list.size() == 0){
 			list.add(newScore);
 			inserted = true;
 		} else {
@@ -46,8 +49,7 @@ public class SortedScoreList extends AbstractSequentialList {
 	}
 
 	public void print(){
-		for (Object o : list) {
-			Score s = (Score) o;
+		for (Score s : list) {
 			System.out.print(s.getPoints());
 			System.out.print(", ");
 		}

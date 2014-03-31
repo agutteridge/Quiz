@@ -1,20 +1,26 @@
-package Quiz.Server;
-
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import compute.Compute;
-import compute.Task;
 
-public class QuizServer extends UnicastRemoteObject implements Compute {
+public class QuizServer extends UnicastRemoteObject implements Compute{
+    public static SortedScoreList<Score> scoreList;
+    public static HashMap<Player> players; //hashmap?
+    public static HashMap<Quiz> quizzes; //hashmap?
 
-    public EchoServer() throws RemoteException {
-        // nothing to initialise for this server
+    public void listQuizzes(){
+        Iterator
     }
 
-    public <T> T executeTask(Task<T> t) {
-        return t.execute();
+
+
+    //restrict quiz name to #chars, enable sorting by different params?
+
+    public QuizServer() throws RemoteException {
+        scoreList = new SortedScoreList<Score>();
+        players = new 
     }
+
+
 }

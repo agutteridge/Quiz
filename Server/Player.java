@@ -5,12 +5,10 @@
 */
 public abstract class Player implements java.io.Serializable {
 	private final String nick;
-	private List<Score> scoreList; //all scores ever?
-	private String password;
+	private List<Score> scoreList;
 
-	public Player(String n, String p){
+	public Player(String n){
 		nick = n;
-		password = p;
 		scoreList = new SortedList<Score>();
 	}
 
