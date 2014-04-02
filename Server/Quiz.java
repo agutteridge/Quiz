@@ -1,13 +1,11 @@
-import java.util.UUID;
-
 public class Quiz {
 	private final String quizName;
-	private final UUID quizID;
+	private final String quizID;
 	private SortedScoreList scoreList;
 
-	public Quiz(String name){
+	public Quiz(String name, String id){
 		quizName = name;
-	    quizID = UUID.randomUUID();
+		quizID = id;
 	    scoreList = new SortedScoreList();
 	}
 }
