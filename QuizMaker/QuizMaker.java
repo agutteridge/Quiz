@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 import java.rmi.NotBoundException;
 
 public class QuizMaker {
+	private String quizID; 
 
 	public void launch(){
 		Scanner in = new Scanner(System.in);
@@ -39,7 +40,6 @@ public class QuizMaker {
 		Scanner in = new Scanner(System.in);
 		boolean isFinal = false;
 		String quizName = "";
-		String first4chars = "";
 
 		do {
 			System.out.println("Please enter a name for your quiz (4 chars min, 30 chars max.):");
@@ -57,17 +57,15 @@ public class QuizMaker {
 					System.out.println("");
 				}
 				isFinal = yesNo(str);
-				first4chars = str.substring(0,4);
 				quizName = str;
 			}
 
 		} while (!isFinal);
 
-		String quizID = "";
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
 			Compute compute = (Compute) service;
-			quizID = compute.generateUniqueQuizID(first4chars);
+			quizID = compute.generateUniqueQuizID(quizName);
 			if (quizID == null){
 				throw new NullPointerException();
 			}
