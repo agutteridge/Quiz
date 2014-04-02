@@ -4,11 +4,12 @@ import java.rmi.Naming;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.rmi.NotBoundException;
+import java.util.Scanner;
 
 public class Main implements Serializable {
 	public void launch(){
 		System.out.println("Let's list all of the quizzes!");
-		register();
+		enterName();
 		listQuizzes();
 	}
 
@@ -16,21 +17,26 @@ public class Main implements Serializable {
         Scanner in = new Scanner(System.in);
         System.out.println("Please enter a username:");
         boolean alphanum = false;
-        String str;
+        String str = "";
 	        
         while (!alphanum) {
             str = in.nextLine();
             char[] charArray = str.toCharArray();
         
             alphanum = true;
-            for (char c : charArray) {
-                if (!Character.isLetterOrDigit(c)){
-                    alphanum = false;
-                }
+            if (charArray.length == 0) {
+            	alphanum = false;
+            } else {
+	            for (char c : charArray) {
+	                if (!Character.isLetterOrDigit(c)){
+	                    alphanum = false;
+	                }
+	            }
             }
 
-            if(!alphanum){
-                System.out.println("Sorry, only alphanumeric characters can be used. Please enter a username:");
+            if (!alphanum){
+                System.out.println("Sorry, only alphanumeric characters can be used.");
+                System.out.println("Please enter a username:");
             }
         }
 

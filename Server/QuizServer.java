@@ -8,22 +8,25 @@ import java.util.Scanner;
 public class QuizServer extends UnicastRemoteObject implements Compute {
     // public static HashMap<Player> players; //hashmap?
     // public static HashMap<Quiz> quizzes; //hashmap?
+    // private final Player playerName;
 
     public void listQuizzes(){
         System.out.println("RMI is happenin'");
     }
 
     public void enterName(String name){
+        // if (searchUser(name)) {
 
+        // }
+        System.out.println("Searching for player \'" + name + "\'");
     }
 
-    private boolean searchUser(String name){
+    // private Player searchUser(String name){
 
-    }
+    // }
 
     //restrict quiz name to #chars, enable sorting by different params?
 
     public QuizServer() throws RemoteException {
-        scoreList = new SortedScoreList();
     }
 }
