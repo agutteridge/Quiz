@@ -24,13 +24,16 @@ public class QuizMaker {
 			} else {
 				isQuit(str);
 				System.out.println("Sorry, your entry wasn't recognised.");
+				System.out.println("");
 				System.out.println("Would you like to enter create (C) or edit (E) mode?");
+				modeSelected = false;
 			}
-		} while (modeSelected = false);
+		} while (!modeSelected);
 	}
 
 
 	private void create(){
+		System.out.println("");
 		System.out.println("*CREATE MODE*");
 
 		Scanner in = new Scanner(System.in);
@@ -41,15 +44,23 @@ public class QuizMaker {
 		do {
 			System.out.println("Please enter a name for your quiz (4 chars min, 30 chars max.):");
 			String str = in.nextLine();
+			System.out.println("");
 
 			if (str.length() < 4){
 				isFinal = false;
 				System.out.println("Sorry, the quiz name must be at least 4 characters long.");
 			} else {
+				if (str.length() > 30) {
+					System.out.println("Name will be truncated to: ");
+					str = str.substring(0, 31);
+					System.out.println(str);
+					System.out.println("");
+				}
 				isFinal = yesNo(str);
 				first4chars = str.substring(0,4);
 				quizName = str;
 			}
+
 		} while (!isFinal);
 
 		String quizID = "";
@@ -71,22 +82,31 @@ public class QuizMaker {
 	}
 
 	private boolean yesNo(String str){
+		Scanner in = new Scanner(System.in);
 		isQuit(str);
+
+		boolean result = false;
 		boolean correctInput = false;
-		str = str.substring(0, 31);
 
 		do {
 			System.out.println("Is the name " + str + " acceptable?");
 			String ans = in.nextLine();
-			ans = str.toUpperCase();
+			System.out.println("");
+
+			ans = ans.toUpperCase();
 			if (ans.equals("Y")){
-				return true;
+				result = true;
+				correctInput = true;
 			} else if (ans.equals("N")){
-				return false;
+				result = false;
+				correctInput = true;
 			} else {
 				System.out.println("Sorry, your entry wasn't recognised.");
+				System.out.println("");
 			}
 		} while (!correctInput);
+
+		return result;
 	}
 
 	private void isQuit(String str){
