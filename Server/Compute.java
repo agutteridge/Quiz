@@ -13,6 +13,8 @@ public interface Compute extends Remote {
 
 	void enterName(String name) throws RemoteException;
 
+	String generateUniqueQuizID(String name) throws RemoteException;
+
 	// void startQuiz(UUID quizID);
 
 	// void sendAnswer(String answer); //enum?
