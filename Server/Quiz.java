@@ -5,7 +5,6 @@ public class Quiz {
 	private final UUID quizID;
 	private SortedScoreList scoreList;
 
-
 	public Quiz(String name){
 		quizName = name;
 	    quizID = UUID.randomUUID();
