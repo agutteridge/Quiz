@@ -17,14 +17,14 @@ public abstract class Player implements java.io.Serializable {
 	}
 
 	// Move class?
-	public void addScore(Score newScore){
-		UUID quiz = newScore.getQuizID();
-		if (getScore(quiz) == null){
-			scoreList.add(newScore);
-		} else {
+	// public void addScore(Score newScore){
+	// 	UUID quiz = newScore.getQuizID();
+	// 	if (getScore(quiz) == null){
+	// 		scoreList.add(newScore);
+	// 	} else {
 
-		}
-	}
+	// 	}
+	// }
 
 	//Move to server class
 	// //create Quiz class (and maybe interface for different types of quiz..)
