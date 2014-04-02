@@ -4,11 +4,15 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Iterator;
 
 public class QuizServer extends UnicastRemoteObject implements Compute {
-    // public static HashMap<Player> players; //hashmap?
-    // public static HashMap<Quiz> quizzes; //hashmap?
-    // private final Player playerName;
+    public static Set<Player> players;
+    public static List<Quiz> quizzes;
 
     public void listQuizzes(){
         System.out.println("RMI is happenin'");
@@ -21,6 +25,33 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         System.out.println("Searching for player \'" + name + "\'");
     }
 
+    public String generateUniqueQuizID(String name){
+        boolean nameInUse = true;
+        int num = 0;
+        String quizID = null;
+
+        do {
+            quizID = name + num;
+            nameInUse = sameName(quizID);
+            num++;
+        } while (nameInUse);
+
+        return quizID;
+    }
+
+    private boolean sameName(String id){
+        Iterator<Quiz> iterator = quizzes.iterator();
+        
+        while (iterator.hasNext()){
+            Quiz q = iterator.next();
+            String qID = q.getQuizID();
+            if (id.equals(qID)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     // private Player searchUser(String name){
 
     // }
@@ -28,5 +59,7 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
     //restrict quiz name to #chars, enable sorting by different params?
 
     public QuizServer() throws RemoteException {
+        players = new HashSet<Player>();
+        quizzes = new ArrayList<Quiz>();
     }
 }
