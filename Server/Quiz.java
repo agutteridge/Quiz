@@ -1,9 +1,19 @@
+import java.util.UUID;
+
 public class Quiz {
 	private final String quizName;
-	private final LinkedList 
+	private final UUID quizID;
+	private SortedScoreList scoreList;
+
+
+	public Quiz(String name){
+		quizName = name;
+	    quizID = UUID.randomUUID();
+	    scoreList = new SortedScoreList();
+	}
 }
 
-//nested class
+//inner class if not required to be serializable?
 class Question {
 	
 }

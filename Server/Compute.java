@@ -1,5 +1,6 @@
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.UUID;
 
 public interface Compute extends Remote {
 
@@ -8,17 +9,19 @@ public interface Compute extends Remote {
 	* 
 	* @return void, quizzes are printed (or make CL menu?)
 	*/
-	void listQuizzes();
+	void listQuizzes() throws RemoteException;
 
-	void startQuiz(UUID quizID);
+	void enterName(String name) throws RemoteException;
 
-	void sendAnswer(String answer); //enum?
+	// void startQuiz(UUID quizID);
 
-	void sendPoints(int points);
+	// void sendAnswer(String answer); //enum?
 
-	void listHighScores(String nickname); //list in batches of 10, enable scrolldown?
+	// void sendPoints(int points);
 
-	void listHighScores(String nickname, UUID quizID); //as above
+	// void listHighScores(String nickname); //list in batches of 10, enable scrolldown?
 
-	void listHighScores(UUID quizID); //as above
+	// void listHighScores(String nickname, UUID quizID); //as above
+
+	// void listHighScores(UUID quizID); //as above
 }

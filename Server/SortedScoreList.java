@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 /**
-* A list which always contains ordered scores.
+* A list which orders scores as they are added.
 */
 public class SortedScoreList extends AbstractSequentialList {
 	List<Score> list;
@@ -16,7 +16,7 @@ public class SortedScoreList extends AbstractSequentialList {
 	public boolean add(Score newScore){
 		boolean inserted = false;
 
-		if(list.size() == 0){
+		if (list.size() == 0){
 			list.add(newScore);
 			inserted = true;
 		} else {
@@ -38,9 +38,9 @@ public class SortedScoreList extends AbstractSequentialList {
 		return inserted;
 	}
 
+	@Override
 	public ListIterator listIterator(int i){
 		ListIterator li = list.listIterator();
-
 		return li;
 	}
 
@@ -53,16 +53,5 @@ public class SortedScoreList extends AbstractSequentialList {
 			System.out.print(s.getPoints());
 			System.out.print(", ");
 		}
-	}
-
-	public static void main(String[] args) {
-		SortedScoreList test = new SortedScoreList(); 
-		Score a = new Score(100);
-		Score b = new Score(1);
-		Score c = new Score(56);
-		test.add(a);
-		test.add(b);
-		test.add(c);
-		test.print();
 	}
 }

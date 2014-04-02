@@ -4,19 +4,43 @@ import java.util.UUID;
 * the quiz played.
 */
 public class Score implements Comparable {
-	// private final UUID player;
+	// private final String playerName;
 	private final int points;
+	private final int total;
+	private final double percentage;
 	// private final UUID quizID;
 
-	public Score(int s){
-		// player = p;
-		points = s;
+	public Score(int s, int t){
+		// playerName = p;
 		// quizID = q;
+
+		points = s;
+		total = t;
+		percentage = percentCalc();
+
+	}
+
+	private double percentCalc(){
+		double decimal = (double) points / (double) total;
+		double result = decimal * 100;
+		return result;
 	}
 
 	public int getPoints(){
 		return points;
 	}
+
+	public double getPercent(){
+		return percentage;
+	}
+
+	// public UUID getQuizID(){
+	// 	return quizID;
+	// }
+
+	// public UUID getPlayerID(){
+	// 	return playerID;
+	// }
 
 	/**
 	* Compares this Score with the specified object for order. Only the scoreNum 
@@ -42,14 +66,25 @@ public class Score implements Comparable {
 			throw new ClassCastException();
 		}
 
-		int comparePoints = s.getPoints();
+		double comparePercent = s.getPercent();
 
-		if (points == comparePoints){
+		if (percentage == comparePercent){
 			return 0;
-		} else if (points > comparePoints){
+		} else if (percentage > comparePercent){
 			return 1;
 		} else {
 			return -1;
 		}
+	}
+
+	public static void main(String[] args) {
+		Score a = new Score (5, 20);
+		System.out.println(Math.round(a.getPercent()) + "%");
+		a = new Score (33, 34);
+		System.out.println(Math.round(a.getPercent()) + "%");
+		a = new Score (7, 9);
+		System.out.println(Math.round(a.getPercent()) + "%");
+		a = new Score (1, 1);
+		System.out.println(Math.round(a.getPercent()) + "%");
 	}
 }
