@@ -13,8 +13,8 @@ import java.util.Iterator;
 public class QuizServer extends UnicastRemoteObject implements Compute {
     public static Set<Player> players;
     public static List<Quiz> quizzes;
-    private final Quiz quizInUse;
-    private Question questionInUse;
+    private Quiz quizInUse;
+    private Quiz.Question questionInUse;
     // using member fields to store reference to Quiz (QuizMaker) and Player (QuizPlayer)? objects
 
     public QuizServer() throws RemoteException {
@@ -22,8 +22,18 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         quizzes = new ArrayList<Quiz>();
     }
 
-    public void listQuizzes(){
-        System.out.println("RMI is happenin'");
+    public String listQuizzes(){
+        String list = "";
+        Iterator<Quiz> iterator = quizzes.iterator();
+        for (Quiz q : quizzes){
+            list += q.getName() + "\r\n";
+        } 
+
+        return list;
+    }
+
+    public String listAnswers(){
+        return questionInUse.getOptions();
     }
 
     public void enterName(String name){
@@ -65,16 +75,16 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
     }
 
     public void addQuestion(String q){
-        Question newQuestion = quizInUse.addQuestion(q);
+        Quiz.Question newQuestion = quizInUse.addQuestion(q);
         questionInUse = newQuestion;
     }
 
-    public void addOptions(String str){
-        quizInUse.questionInUse.addOption(str);
+    public void addOption(String str){
+        questionInUse.addOption(str);
     }
 
     public void setCorrect(int num){
-        quizInUse.questionInUse.setCorrect(num);
+        questionInUse.setCorrect(num);
     }
 
     // private Player searchUser(String name){

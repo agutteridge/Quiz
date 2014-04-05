@@ -1,6 +1,8 @@
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 
-public class Quiz extends Serializable {
+public class Quiz implements java.io.Serializable {
 	private final String quizName;
 	private final String quizID;
 	private SortedScoreList scoreList;
@@ -33,8 +35,7 @@ public class Quiz extends Serializable {
 		return newQuestion;
 	}
 
-	//inner class if not required to be serializable?
-	class Question extends Serializable {
+	class Question implements java.io.Serializable {
 		private String question;
 		private List<String> options;
 		private int correct;
@@ -54,7 +55,7 @@ public class Quiz extends Serializable {
 			}
 		}
 
-		public boolean setCorrect(int answer){
+		public void setCorrect(int answer){
 			if (answer < options.size()){
 				correct = answer;
 				if (options.size() > 1){
@@ -67,7 +68,20 @@ public class Quiz extends Serializable {
 			return pass;
 		}
 
-		public String getOption(int num){
+
+		public String getOptions(){
+			String result = "";
+	        Iterator<String> iterator = options.iterator();
+		    int i = 0;
+		    for (String str : options){
+		        result += i + ": " + str + "\r\n";
+		        i++;
+		    } 
+
+		    return result;
+		}
+
+		public String getOptions(int num){
 			return options.get(num);
 		}
 	}

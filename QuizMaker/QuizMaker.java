@@ -22,6 +22,9 @@ public class QuizMaker {
 			if (str.toUpperCase().equals("C")){
 				create();
 				modeSelected = true;
+			} else if (str.toUpperCase().equals("E")) {
+				edit();
+				modeSelected = true;				
 			} else {
 				isQuit(str);
 				System.out.println("Sorry, your entry wasn't recognised.");
@@ -31,7 +34,6 @@ public class QuizMaker {
 			}
 		} while (!modeSelected);
 	}
-
 
 	private void create(){
 		System.out.println("");
@@ -85,22 +87,18 @@ public class QuizMaker {
 			System.out.println("Add another question?");
 			isFinal = yesNo();
 		} while (isFinal);
+
+		System.out.println("Quiz complete!");
 	}
 
 	private void newQuestion(){
+		Scanner in = new Scanner(System.in);		
 		boolean isFinal = false;
 		String str = "";
-		do {
-			System.out.println("New question:");
-			str = in.nextLine();
-			isQuit(str);
-			System.out.println("");
-
-			System.out.print("Are you happy with \'" + str + "\' ? (Y/N)");
-			isFinal = yesNo();
-			System.out.println("");
-
-		} while (!isFinal);
+		System.out.println("New question:");
+		str = in.nextLine();
+		isQuit(str);
+		System.out.println("");
 
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
@@ -121,22 +119,17 @@ public class QuizMaker {
 		} while (isFinal);
 
 		setCorrect();
+		System.out.println("");
+		System.out.println("Question complete!");
 	}
 
 	private void newOption(){
+		Scanner in = new Scanner(System.in);
 		boolean isFinal = false;
 		String str = "";
-		do {
-			System.out.println("New option:");
-			str = in.nextLine();
-			isQuit(str);
-			System.out.println("");
-
-			System.out.print("Are you happy with \'" + str + "\' ? (Y/N)");
-			isFinal = yesNo();
-			System.out.println("");
-
-		} while (!isFinal);
+		System.out.println("New option:");
+		str = in.nextLine();
+		isQuit(str);
 
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
@@ -152,7 +145,21 @@ public class QuizMaker {
 	}
 
 	private void setCorrect(){
+		Scanner in = new Scanner(System.in);
 		boolean isFinal = false;
+
+		try {
+			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
+			Compute compute = (Compute) service;
+			System.out.println(compute.listAnswers());
+		} catch (MalformedURLException ex) {
+			ex.printStackTrace();
+		} catch (RemoteException ex) {
+			ex.printStackTrace();
+		} catch (NotBoundException ex) {
+			ex.printStackTrace();
+		}		
+
 		System.out.println("Answer number:");
 		String str = in.nextLine();
 		int ans = Integer.parseInt(str);
@@ -168,11 +175,20 @@ public class QuizMaker {
 		} catch (NotBoundException ex) {
 			ex.printStackTrace();
 		}
+	}
 
-		System.out.println("YAY");
-		//ask for number
-		//return Q + answer association with number
-		//yesNo(); 
+	private void edit(){
+		try {
+			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
+			Compute compute = (Compute) service;
+			System.out.println(compute.listQuizzes());
+		} catch (MalformedURLException ex) {
+			ex.printStackTrace();
+		} catch (RemoteException ex) {
+			ex.printStackTrace();
+		} catch (NotBoundException ex) {
+			ex.printStackTrace();
+		}		
 	}
 
 	private boolean yesNo(){
@@ -194,7 +210,6 @@ public class QuizMaker {
 				correctInput = true;
 			} else {
 				System.out.println("Sorry, your entry wasn't recognised.");
-				System.out.println("");
 			}
 		} while (!correctInput);
 

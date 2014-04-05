@@ -9,15 +9,21 @@ public interface Compute extends Remote {
 	* 
 	* @return void, quizzes are printed (or make CL menu?)
 	*/
-	void listQuizzes() throws RemoteException;
+	String listQuizzes() throws RemoteException;
+
+	String listAnswers() throws RemoteException;
 
 	void enterName(String name) throws RemoteException;
 
 	String generateUniqueQuizID(String name) throws RemoteException;
 
-	// void startQuiz(UUID quizID);
+    void addQuestion(String q) throws RemoteException;
 
-	// void sendAnswer(String answer); //enum?
+    void addOption(String str) throws RemoteException;
+
+    void setCorrect(int num) throws RemoteException;
+
+	// void startQuiz(UUID quizID);
 
 	// void sendPoints(int points);
 
