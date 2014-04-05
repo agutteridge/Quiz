@@ -13,7 +13,14 @@ import java.util.Iterator;
 public class QuizServer extends UnicastRemoteObject implements Compute {
     public static Set<Player> players;
     public static List<Quiz> quizzes;
-    // use member fields to store reference to Quiz (QuizMaker) and Player (QuizPlayer) objects?
+    private final Quiz quizInUse;
+    private Question questionInUse;
+    // using member fields to store reference to Quiz (QuizMaker) and Player (QuizPlayer)? objects
+
+    public QuizServer() throws RemoteException {
+        players = new HashSet<Player>();
+        quizzes = new ArrayList<Quiz>();
+    }
 
     public void listQuizzes(){
         System.out.println("RMI is happenin'");
@@ -39,6 +46,7 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         } while (nameInUse);
 
         Quiz q = new Quiz(name, quizID);
+        quizInUse = q;
         quizzes.add(q);
         return quizID;
     }
@@ -56,14 +64,23 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         return false;
     }
 
+    public void addQuestion(String q){
+        Question newQuestion = quizInUse.addQuestion(q);
+        questionInUse = newQuestion;
+    }
+
+    public void addOptions(String str){
+        quizInUse.questionInUse.addOption(str);
+    }
+
+    public void setCorrect(int num){
+        quizInUse.questionInUse.setCorrect(num);
+    }
+
     // private Player searchUser(String name){
 
     // }
 
     //restrict quiz name to #chars, enable sorting by different params?
 
-    public QuizServer() throws RemoteException {
-        players = new HashSet<Player>();
-        quizzes = new ArrayList<Quiz>();
-    }
 }

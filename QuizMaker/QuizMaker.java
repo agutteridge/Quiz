@@ -44,6 +44,7 @@ public class QuizMaker {
 		do {
 			System.out.println("Please enter a name for your quiz (4 chars min, 30 chars max.):");
 			String str = in.nextLine();
+			isQuit(str);
 			System.out.println("");
 
 			if (str.length() < 4){
@@ -56,7 +57,8 @@ public class QuizMaker {
 					System.out.println(str);
 					System.out.println("");
 				}
-				isFinal = yesNo(str);
+				System.out.println("Are you happy with \'" + str + "\'? (Y/N)");
+				isFinal = yesNo();
 				quizName = str;
 			}
 
@@ -77,18 +79,110 @@ public class QuizMaker {
 		} catch (NotBoundException ex) {
 			ex.printStackTrace();
 		}
+
+		do {
+			newQuestion();
+			System.out.println("Add another question?");
+			isFinal = yesNo();
+		} while (isFinal);
 	}
 
-	private boolean yesNo(String str){
-		Scanner in = new Scanner(System.in);
-		isQuit(str);
+	private void newQuestion(){
+		boolean isFinal = false;
+		String str = "";
+		do {
+			System.out.println("New question:");
+			str = in.nextLine();
+			isQuit(str);
+			System.out.println("");
 
+			System.out.print("Are you happy with \'" + str + "\' ? (Y/N)");
+			isFinal = yesNo();
+			System.out.println("");
+
+		} while (!isFinal);
+
+		try {
+			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
+			Compute compute = (Compute) service;
+			compute.addQuestion(str);
+		} catch (MalformedURLException ex) {
+			ex.printStackTrace();
+		} catch (RemoteException ex) {
+			ex.printStackTrace();
+		} catch (NotBoundException ex) {
+			ex.printStackTrace();
+		}
+
+		do {
+			newOption();
+			System.out.println("Add another option?");
+			isFinal = yesNo();
+		} while (isFinal);
+
+		setCorrect();
+	}
+
+	private void newOption(){
+		boolean isFinal = false;
+		String str = "";
+		do {
+			System.out.println("New option:");
+			str = in.nextLine();
+			isQuit(str);
+			System.out.println("");
+
+			System.out.print("Are you happy with \'" + str + "\' ? (Y/N)");
+			isFinal = yesNo();
+			System.out.println("");
+
+		} while (!isFinal);
+
+		try {
+			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
+			Compute compute = (Compute) service;
+			compute.addOption(str);
+		} catch (MalformedURLException ex) {
+			ex.printStackTrace();
+		} catch (RemoteException ex) {
+			ex.printStackTrace();
+		} catch (NotBoundException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private void setCorrect(){
+		boolean isFinal = false;
+		System.out.println("Answer number:");
+		String str = in.nextLine();
+		int ans = Integer.parseInt(str);
+
+		try {
+			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
+			Compute compute = (Compute) service;
+			compute.setCorrect(ans);
+		} catch (MalformedURLException ex) {
+			ex.printStackTrace();
+		} catch (RemoteException ex) {
+			ex.printStackTrace();
+		} catch (NotBoundException ex) {
+			ex.printStackTrace();
+		}
+
+		System.out.println("YAY");
+		//ask for number
+		//return Q + answer association with number
+		//yesNo(); 
+	}
+
+	private boolean yesNo(){
+		Scanner in = new Scanner(System.in);
 		boolean result = false;
 		boolean correctInput = false;
 
 		do {
-			System.out.println("Is the name " + str + " acceptable?");
 			String ans = in.nextLine();
+			isQuit(ans);
 			System.out.println("");
 
 			ans = ans.toUpperCase();
