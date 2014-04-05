@@ -39,6 +39,7 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         } while (nameInUse);
 
         Quiz q = new Quiz(name, quizID);
+        quizzes.add(q);
         return quizID;
     }
 
