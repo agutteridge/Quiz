@@ -1,25 +1,101 @@
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Scanner;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Iterator;
+import java.util.*;
+import java.io.File;
 
 public class QuizServer extends UnicastRemoteObject implements Compute {
-    public static Set<Player> players;
+    public static ConcurrentMap<String, Player> players;
     public static List<Quiz> quizzes;
     private Quiz quizInUse;
     private Quiz.Question questionInUse;
     // using member fields to store reference to Quiz (QuizMaker) and Player (QuizPlayer)? objects
 
     public QuizServer() throws RemoteException {
-        players = new HashSet<Player>();
-        quizzes = new ArrayList<Quiz>();
+        players = new ConcurrentHashMap<String, Player>());
+        quizzes = Collections.synchronizedList(new ArrayList<Quiz>());
+
+        final String QUIZFILE = "." + File.separator + "quizdata.xml";
+        final String PLAYERFILE = "." + File.separator + "playerdata.xml";        
+
+        File f = new File(QUIZFILE);
+        doesExist(f, QUIZFILE);
+        f = new File(PLAYERFILE);
+        doesExist(f, PLAYERFILE);
+    }
+
+    public Map<Player> getPlayers(){
+        return this.players;
+    }
+
+    public void setPlayers(Map<Player> newMap){
+        this.players = newMap;
+    }
+
+    public List<Quiz> getQuizzes(){
+        return this.quizzes;
+    }
+
+    public void setQuizzes(List<Quiz> newList){
+        this.quizzes = newList;
+    }
+
+    private void doesExist(File f, String filename){
+        if (!f.exists()){ 
+            try {
+                f.createNewFile();
+                System.out.println("Creating new file.");
+            } catch (IOException e){
+                System.out.println("Could not create " + f.getName());
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Loading...");
+            copyOver(filename);
+            System.out.println(filename + " loaded.");
+        } 
+    }
+
+    private void copyOver(String filename){
+        Scanner sc = null;
+        try {
+            sc = new Scanner(
+                    new BufferedInputStream(
+                            new FileInputStream(filename)));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        sc.close();
+
+        XMLDecoder d = null;
+        try {
+            d = new XMLDecoder(
+                    new BufferedInputStream(
+                            new FileInputStream(s)));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if (filename.equals(QUIZFILE)){
+            quizzes = (List<Quiz>) d.readObject();
+        } else if (filename.equals(PLAYERFILE)){
+            players = (Map<Player>) d.readObject();
+        } else {
+            throw new FileNotFoundException();
+        }
+
+        d.close();        
     }
 
     public String listQuizzes(){
@@ -90,6 +166,35 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
     // private Player searchUser(String name){
 
     // }
+
+    public void flush(){
+        final String QUIZFILE = "." + File.separator + "quizdata.xml";
+        final String PLAYERFILE = "." + File.separator + "playerdata.xml";
+
+        encode(QUIZFILE);
+        encode(PLAYERFILE);
+    }
+
+    private void encode(String filename){
+        XMLEncoder encode = null;
+        try {
+            encode = new XMLEncoder(
+                        new BufferedOutputStream(
+                            new FileOutputStream(filename)));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if (filename.equals(QUIZFILE)){
+            encode.writeObject(quizzes);
+        } else if (filename.equals(PLAYERFILE)){
+            encode.writeObject(players);
+        } else {
+            throw new FileNotFoundException();
+        }
+
+        encode.close();
+    }
 
     //restrict quiz name to #chars, enable sorting by different params?
 
