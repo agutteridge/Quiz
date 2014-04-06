@@ -6,7 +6,7 @@ import java.rmi.RemoteException;
 import java.rmi.NotBoundException;
 import java.util.Scanner;
 
-public class QuizPlayer implements Serializable {
+public class QuizPlayer {
 	public void launch(){
 		System.out.println("Let's list all of the quizzes!");
 		enterName();

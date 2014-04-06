@@ -1,13 +1,18 @@
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.io.Serializable;
 
-public class Quiz implements java.io.Serializable {
-	private final String quizName;
-	private final String quizID;
-	private SortedScoreList scoreList;
+public class Quiz implements Serializable {
+	private String quizName;
+	private String quizID;
+	private List<Score> scoreList;
 	private List<Question> questions;
 	private boolean pass = false; //evaluates whether quiz is //finished (to be written) or not.
+
+	public Quiz(){
+		//null constructor for serialisation
+	}
 
 	public Quiz(String name, String id){
 		quizName = name;
@@ -19,8 +24,40 @@ public class Quiz implements java.io.Serializable {
 		return quizName;
 	}
 
+	public void setName(String name){
+		quizName = name;
+	}
+
 	public String getQuizID(){
 		return quizID;
+	}
+
+	public void setQuizID(String qID){
+		quizID = qID;
+	}
+
+	public List<Score> getScores(){
+		return scoreList;
+	}
+
+	public void setScores(List<Score> newList){
+		scoreList = newList;
+	}
+
+	public List<Question> getQuestions(){
+		return questions;
+	}
+
+	public void setQuestions(List<Question> newList){
+		questions = newList;
+	}
+
+	public boolean hasPassed(){
+		return pass;
+	}
+
+	public void setPass(boolean newBool){
+		pass = newBool;
 	}
 
 	public Question addQuestion(String q){
@@ -35,7 +72,7 @@ public class Quiz implements java.io.Serializable {
 		return newQuestion;
 	}
 
-	class Question implements java.io.Serializable {
+	class Question implements Serializable {
 		private String question;
 		private List<String> options;
 		private int correct;

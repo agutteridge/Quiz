@@ -2,15 +2,24 @@ import java.util.AbstractSequentialList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.io.Serializable;
 
 /**
 * A list which orders scores as they are added.
 */
-public class SortedScoreList extends AbstractSequentialList {
-	List<Score> list;
+public class SortedScoreList extends AbstractSequentialList implements Serializable {
+	private List<Score> list;
 
 	public SortedScoreList(){
-		list = new LinkedList<Score>();		
+		this.list = new LinkedList<Score>();		
+	}
+
+	public List<Score> getList(){
+		return this.list;
+	}
+
+	public void setList(List<Score> newList){
+		this.list = newList;
 	}
 
 	public boolean add(Score newScore){

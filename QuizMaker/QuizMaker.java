@@ -224,12 +224,23 @@ public class QuizMaker {
 	}
 
 	private void flush(){
-		//making sure all data gets saved 
+		try {
+			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
+			Compute compute = (Compute) service;
+			compute.flush();
+		} catch (MalformedURLException ex) {
+			ex.printStackTrace();
+		} catch (RemoteException ex) {
+			ex.printStackTrace();
+		} catch (NotBoundException ex) {
+			ex.printStackTrace();
+		}		
 		System.exit(0);
 	}
 
 	public static void main(String[] args) {
 		QuizMaker qm = new QuizMaker();
 		qm.launch();
+		qm.flush();
 	}
 }

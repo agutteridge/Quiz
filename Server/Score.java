@@ -4,43 +4,57 @@ import java.util.UUID;
 * the quiz played.
 */
 public class Score implements Comparable {
-	// private final String playerName;
-	private final int points;
-	private final int total;
-	private final double percentage;
-	// private final UUID quizID;
+	private String playerName;
+	private int points;
+	private int total;
+	private double percentage;
+	private String quizID;
 
-	public Score(int s, int t){
-		// playerName = p;
-		// quizID = q;
-
-		points = s;
-		total = t;
-		percentage = percentCalc();
-
+	public Score(int s, int t, String p, String q){
+		this.playerName = p;
+		this.points = s;
+		this.total = t;
+		this.quizID = q;
+		percentCalc();
 	}
 
-	private double percentCalc(){
+	private void percentCalc(){
 		double decimal = (double) points / (double) total;
 		double result = decimal * 100;
-		return result;
+		setPercentage(result);
+	}
+
+	public String getName(){
+		return this.playerName;
+	}
+
+	public void setName(String newString){
+		this.playerName = newString;
 	}
 
 	public int getPoints(){
-		return points;
+		return this.points;
 	}
 
-	public double getPercent(){
-		return percentage;
+	public void setPoints(int newInt){
+		this.points = newInt;
 	}
 
-	// public UUID getQuizID(){
-	// 	return quizID;
-	// }
+	public double getPercentage(){
+		return this.percentage;
+	}
 
-	// public UUID getPlayerID(){
-	// 	return playerID;
-	// }
+	public void setPercentage(double newDouble){
+		this.percentage = newDouble;
+	}
+
+	public String getQuizID(){
+		return quizID;
+	}
+
+	public void setQuizID(String newString){
+		this.quizID = newString;
+	}
 
 	/**
 	* Compares this Score with the specified object for order. Only the scoreNum 
@@ -75,16 +89,5 @@ public class Score implements Comparable {
 		} else {
 			return -1;
 		}
-	}
-
-	public static void main(String[] args) {
-		Score a = new Score (5, 20);
-		System.out.println(Math.round(a.getPercent()) + "%");
-		a = new Score (33, 34);
-		System.out.println(Math.round(a.getPercent()) + "%");
-		a = new Score (7, 9);
-		System.out.println(Math.round(a.getPercent()) + "%");
-		a = new Score (1, 1);
-		System.out.println(Math.round(a.getPercent()) + "%");
 	}
 }

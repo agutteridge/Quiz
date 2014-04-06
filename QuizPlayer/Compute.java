@@ -23,6 +23,8 @@ public interface Compute extends Remote {
 
     void setCorrect(int num) throws RemoteException;
 
+    void flush() throws RemoteException;
+
 	// void startQuiz(UUID quizID);
 
 	// void sendPoints(int points);
