@@ -7,7 +7,7 @@ import java.io.Serializable;
 * 
 * Nicknames are chosen by the player upon registration and are unique on the system.
 */
-public abstract class Player {
+public abstract class Player implements Serializable {
 	private String nick;
 	private Calendar dob;
 	private String email;

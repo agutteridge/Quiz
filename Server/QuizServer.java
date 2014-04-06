@@ -12,17 +12,18 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
+import java.util.concurrent.*;
 import java.io.File;
 
 public class QuizServer extends UnicastRemoteObject implements Compute {
     public static ConcurrentMap<String, Player> players;
     public static List<Quiz> quizzes;
     private Quiz quizInUse;
-    private Quiz.Question questionInUse;
+    private Question questionInUse;
     // using member fields to store reference to Quiz (QuizMaker) and Player (QuizPlayer)? objects
 
     public QuizServer() throws RemoteException {
-        players = new ConcurrentHashMap<String, Player>());
+        players = new ConcurrentHashMap<String, Player>();
         quizzes = Collections.synchronizedList(new ArrayList<Quiz>());
 
         final String QUIZFILE = "." + File.separator + "quizdata.xml";
@@ -34,11 +35,11 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         doesExist(f, PLAYERFILE);
     }
 
-    public Map<Player> getPlayers(){
+    public ConcurrentMap<String, Player> getPlayers(){
         return this.players;
     }
 
-    public void setPlayers(Map<Player> newMap){
+    public void setPlayers(ConcurrentMap<String, Player> newMap){
         this.players = newMap;
     }
 
@@ -48,6 +49,22 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
 
     public void setQuizzes(List<Quiz> newList){
         this.quizzes = newList;
+    }
+
+    public Quiz getQuizInUse(){
+        return this.quizInUse;
+    }
+
+    public void setQuizInUse(Quiz newQuiz){
+        this.quizInUse = newQuiz;
+    }
+
+    public Question getQuestionInUse(){
+        return this.questionInUse;
+    }
+
+    public void setQuestionInUse(Question newQuestion){
+        this.questionInUse = newQuestion;
     }
 
     private void doesExist(File f, String filename){
@@ -60,13 +77,15 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
                 e.printStackTrace();
             }
         } else {
-            System.out.println("Loading...");
-            copyOver(filename);
-            System.out.println(filename + " loaded.");
+            if (f.length() != 0){
+                System.out.println("Loading...");
+                copyOver(filename);
+                System.out.println(filename + " loaded.");
+            }
         } 
     }
 
-    private void copyOver(String filename){
+    private void copyOver(String filename) {
         Scanner sc = null;
         try {
             sc = new Scanner(
@@ -82,17 +101,15 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         try {
             d = new XMLDecoder(
                     new BufferedInputStream(
-                            new FileInputStream(s)));
+                            new FileInputStream(filename)));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
-        if (filename.equals(QUIZFILE)){
+        if (filename.equals("." + File.separator + "quizdata.xml")){
             quizzes = (List<Quiz>) d.readObject();
-        } else if (filename.equals(PLAYERFILE)){
-            players = (Map<Player>) d.readObject();
-        } else {
-            throw new FileNotFoundException();
+        } else if (filename.equals("." + File.separator + "playerdata.xml")){
+            players = (ConcurrentMap<String, Player>) d.readObject();
         }
 
         d.close();        
@@ -109,7 +126,8 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
     }
 
     public String listAnswers(){
-        return questionInUse.getOptions();
+        List<String> optionlist = questionInUse.getOptions();
+        return listToString(optionlist);
     }
 
     public void enterName(String name){
@@ -151,7 +169,7 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
     }
 
     public void addQuestion(String q){
-        Quiz.Question newQuestion = quizInUse.addQuestion(q);
+        Question newQuestion = quizInUse.addQuestion(q);
         questionInUse = newQuestion;
     }
 
@@ -163,11 +181,8 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         questionInUse.setCorrect(num);
     }
 
-    // private Player searchUser(String name){
-
-    // }
-
-    public void flush(){
+    public void flush() {
+        System.out.println("FLOOSH");
         final String QUIZFILE = "." + File.separator + "quizdata.xml";
         final String PLAYERFILE = "." + File.separator + "playerdata.xml";
 
@@ -176,6 +191,7 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
     }
 
     private void encode(String filename){
+        System.out.println("SERIALIZIN' " + filename);
         XMLEncoder encode = null;
         try {
             encode = new XMLEncoder(
@@ -185,15 +201,34 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
             e.printStackTrace();
         }
 
-        if (filename.equals(QUIZFILE)){
-            encode.writeObject(quizzes);
-        } else if (filename.equals(PLAYERFILE)){
+        if (filename.equals("." + File.separator + "quizdata.xml")){
+            List<Quiz> listToWrite = new ArrayList<Quiz>(quizzes.size());
+            for (Quiz q : quizzes) {
+                listToWrite.add(q);
+            }
+            System.out.println("Writing quizzes");
+            encode.writeObject(listToWrite);
+        } else if (filename.equals("." + File.separator + "playerdata.xml")){
+            System.out.println("Writing players");
             encode.writeObject(players);
-        } else {
-            throw new FileNotFoundException();
         }
+        System.out.println("DONE!");
 
         encode.close();
+    }
+
+
+
+    public String listToString(List<String> options){
+        String result = "";
+        Iterator<String> iterator = options.iterator();
+        int i = 0;
+        for (String str : options){
+            result += i + ": " + str + "\r\n";
+            i++;
+        } 
+
+        return result;
     }
 
     //restrict quiz name to #chars, enable sorting by different params?

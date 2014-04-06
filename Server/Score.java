@@ -10,6 +10,10 @@ public class Score implements Comparable {
 	private double percentage;
 	private String quizID;
 
+	public Score(){
+		//no-argument constructor for serialisation		
+	}
+
 	public Score(int s, int t, String p, String q){
 		this.playerName = p;
 		this.points = s;
@@ -38,6 +42,14 @@ public class Score implements Comparable {
 
 	public void setPoints(int newInt){
 		this.points = newInt;
+	}
+
+	public int getTotal(){
+		return this.total;
+	}
+
+	public void setTotal(int newInt){
+		this.total = newInt;
 	}
 
 	public double getPercentage(){
@@ -80,7 +92,7 @@ public class Score implements Comparable {
 			throw new ClassCastException();
 		}
 
-		double comparePercent = s.getPercent();
+		double comparePercent = s.getPercentage();
 
 		if (percentage == comparePercent){
 			return 0;
