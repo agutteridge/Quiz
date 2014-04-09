@@ -1,6 +1,6 @@
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.UUID;
+import java.util.List;
 
 public interface Compute extends Remote {
 
@@ -9,9 +9,7 @@ public interface Compute extends Remote {
 	* 
 	* @return void, quizzes are printed (or make CL menu?)
 	*/
-	String listQuizzes() throws RemoteException;
-
-	String listAnswers() throws RemoteException;
+    List<String> getQuizNames() throws RemoteException;
 
 	void enterName(String name) throws RemoteException;
 
@@ -22,6 +20,8 @@ public interface Compute extends Remote {
     void addOption(String str) throws RemoteException;
 
     void setCorrect(int num) throws RemoteException;
+
+    List<String> getOptions() throws RemoteException;
 
     void flush() throws RemoteException;
 

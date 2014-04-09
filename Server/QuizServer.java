@@ -115,19 +115,15 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         d.close();        
     }
 
-    public String listQuizzes(){
-        String list = "";
+    public List<String> getQuizNames(){
+        List<String> result = new ArrayList<String>(quizzes.size());
+        
         Iterator<Quiz> iterator = quizzes.iterator();
         for (Quiz q : quizzes){
-            list += q.getName() + "\r\n";
+            result.add(q.getName());
         } 
 
-        return list;
-    }
-
-    public String listAnswers(){
-        List<String> optionlist = questionInUse.getOptions();
-        return listToString(optionlist);
+        return result;
     }
 
     public void enterName(String name){
@@ -138,6 +134,19 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
     }
 
     public String generateUniqueQuizID(String name){
+        name = name.toUpperCase();
+        int i = 0;
+        char[] idArray = new char[4];
+
+        while (i < 4){
+            for (char c : name.toCharArray()){
+                if (c != ' '){
+                    i++;
+                    idArray[i] = c;
+                }
+            }
+        }
+
         String first4chars = name.substring(0,4);
         boolean nameInUse = true;
         int num = 0;
@@ -151,7 +160,6 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
 
         Quiz q = new Quiz(name, quizID);
         quizInUse = q;
-        quizzes.add(q);
         return quizID;
     }
 
@@ -179,6 +187,12 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
 
     public void setCorrect(int num){
         questionInUse.setCorrect(num);
+    }
+
+    public List<String> getOptions(){
+        List<String> result;
+        result = questionInUse.getOptions();
+        return result;
     }
 
     public void flush() {
@@ -216,21 +230,6 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
 
         encode.close();
     }
-
-
-
-    public String listToString(List<String> options){
-        String result = "";
-        Iterator<String> iterator = options.iterator();
-        int i = 0;
-        for (String str : options){
-            result += i + ": " + str + "\r\n";
-            i++;
-        } 
-
-        return result;
-    }
-
     //restrict quiz name to #chars, enable sorting by different params?
 
 }

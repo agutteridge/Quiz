@@ -5,12 +5,12 @@ import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.rmi.NotBoundException;
 import java.util.Scanner;
+import java.util.List;
+import java.util.Iterator;
 
 public class QuizPlayer {
 	public void launch(){
-		System.out.println("Let's list all of the quizzes!");
 		enterName();
-		listQuizzes();
 	}
 
 	private void enterName(){
@@ -54,10 +54,16 @@ public class QuizPlayer {
 	}
 
 	private void listQuizzes(){
+		List<String> quizNameList;
+		int quizTotal;
+
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
 			Compute compute = (Compute) service;
-			compute.listQuizzes();
+			quizNameList = compute.getQuizNames();
+			quizTotal = quizNameList.size();
+			System.out.println(listToString(quizNameList));
+			chooseQuiz(quizTotal);
 		} catch (MalformedURLException ex) {
 			ex.printStackTrace();
 		} catch (RemoteException ex) {
@@ -66,6 +72,18 @@ public class QuizPlayer {
 			ex.printStackTrace();
 		}
 	}
+
+    private String listToString(List<String> options){
+        String result = "";
+        Iterator<String> iterator = options.iterator();
+        int i = 0;
+        for (String str : options){
+            result += i + ": " + str + "\r\n";
+            i++;
+        } 
+
+        return result;
+    }
 
 	public static void main(String[] args) {
 		QuizPlayer m = new QuizPlayer();

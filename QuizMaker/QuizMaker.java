@@ -1,4 +1,6 @@
 import java.util.Scanner;
+import java.util.Iterator;
+import java.util.List;
 import java.rmi.Remote;
 import java.io.*;
 import java.rmi.Naming;
@@ -38,7 +40,27 @@ public class QuizMaker {
 	private void create(){
 		System.out.println("");
 		System.out.println("*CREATE MODE*");
+		String quizName = enterQuizName();
+		String quizID = generateUniqueQuizID(quizName);
 
+		boolean anotherQuestion = true;
+		do {
+			newQuestion();
+			System.out.println("Add another question?");
+			anotherQuestion = yesNo();
+		} while (anotherQuestion);
+
+		System.out.println("Quiz complete!");
+		printEntireQuiz();
+		boolean saved = saveOrDiscard();
+		if (saved){
+			System.out.println("Thank you, your quiz (ID: " + quizID + ") has been created!");
+		}
+
+		System.out.println("Return to main menu?");
+	}
+
+	private String enterName(){
 		Scanner in = new Scanner(System.in);
 		boolean isFinal = false;
 		String quizName = "";
@@ -63,16 +85,17 @@ public class QuizMaker {
 				isFinal = yesNo();
 				quizName = str;
 			}
-
 		} while (!isFinal);
+
+	}
+
+	private String generateUniqueQuizID(String name){
+		String quizID = "";
 
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
 			Compute compute = (Compute) service;
 			quizID = compute.generateUniqueQuizID(quizName);
-			if (quizID == null){
-				throw new NullPointerException();
-			}
 			System.out.println("The ID of your quiz \"" + quizName + "\" is " + quizID);
 		} catch (MalformedURLException ex) {
 			ex.printStackTrace();
@@ -82,15 +105,9 @@ public class QuizMaker {
 			ex.printStackTrace();
 		}
 
-		do {
-			newQuestion();
-			System.out.println("Add another question?");
-			isFinal = yesNo();
-		} while (isFinal);
-
-		System.out.println("Quiz complete!");
+		return quizID;
 	}
-
+	
 	private void newQuestion(){
 		Scanner in = new Scanner(System.in);		
 		boolean isFinal = false;
@@ -145,24 +162,34 @@ public class QuizMaker {
 	}
 
 	private void setCorrect(){
+		List<String> questionOptions;
+		int optionNum = -1;
+		questionOptions = getOptions();
+		optionNum = questionOptions.size();
+		System.out.println("highest option number: " + optionNum);
+		System.out.println(listToString(questionOptions));
+
 		Scanner in = new Scanner(System.in);
 		boolean isFinal = false;
-
-		try {
-			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
-			Compute compute = (Compute) service;
-			System.out.println(compute.listAnswers());
-		} catch (MalformedURLException ex) {
-			ex.printStackTrace();
-		} catch (RemoteException ex) {
-			ex.printStackTrace();
-		} catch (NotBoundException ex) {
-			ex.printStackTrace();
-		}		
+		int ans = -1;
 
 		System.out.println("Answer number:");
-		String str = in.nextLine();
-		int ans = Integer.parseInt(str);
+		do {
+			String str = in.nextLine();
+			try {
+				ans = Integer.parseInt(str);
+				if (ans < optionNum && ans >= 0){
+					isFinal = true;
+				} else {
+					int highest = optionNum - 1;
+					System.out.println("");
+					System.out.println("Please choose a value between 0 and " + highest + ".");
+				}
+			} catch (NumberFormatException e){
+				System.out.println("");
+				System.out.println("Please enter a numerical value.");
+			}
+		} while (!isFinal);
 
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
@@ -177,18 +204,66 @@ public class QuizMaker {
 		}
 	}
 
-	private void edit(){
+	private void printEntireQuiz(){
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
 			Compute compute = (Compute) service;
-			System.out.println(compute.listQuizzes());
+			compute.printEntireQuiz();
 		} catch (MalformedURLException ex) {
 			ex.printStackTrace();
 		} catch (RemoteException ex) {
 			ex.printStackTrace();
 		} catch (NotBoundException ex) {
 			ex.printStackTrace();
-		}		
+		}
+	}
+
+	private boolean saveOrDiscard(){
+		boolean firstAnswer = false;
+		boolean secondAnswer = false;
+		do {
+			System.out.println("Would you like to save this quiz?");
+			firstAnswer = yesNo();
+			if (firstAnswer){
+				System.out.println("Are you sure? Quizzes cannot be changed or removed!");
+				secondAnswer = yesNo();
+			} else {
+				System.out.println("Are you sure? ");
+				secondAnswer = yesNo();		
+			}
+		} while (!secondAnswer);
+
+		if (firstAnswer){
+			try {
+				Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
+				Compute compute = (Compute) service;
+				compute.save();
+				compute.flush();
+				return true;
+			} catch (MalformedURLException ex) {
+				ex.printStackTrace();
+			} catch (RemoteException ex) {
+				ex.printStackTrace();
+			} catch (NotBoundException ex) {
+				ex.printStackTrace();
+			}			
+		}
+
+		return false;
+	}
+
+	private void edit(){
+		try {
+			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
+			Compute compute = (Compute) service;
+			//lookup quizID
+		} catch (MalformedURLException ex) {
+			ex.printStackTrace();
+		} catch (RemoteException ex) {
+			ex.printStackTrace();
+		} catch (NotBoundException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	private boolean yesNo(){
@@ -219,24 +294,43 @@ public class QuizMaker {
 	private void isQuit(String str){
 		str = str.toUpperCase();
 		if (str.equals("Q") || str.equals("QUIT")){
-			flush();
+			System.out.println("Are you sure you want to quit? Data has not been saved.");
+			boolean quit = yesNo();
+			if (quit){
+				System.exit(0);
+			}
 		}
 	}
 
-	private void flush(){
+	private List<String> getOptions(){
+		List<String> result = null;
+
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
 			Compute compute = (Compute) service;
-			compute.flush();
+			result = compute.getOptions();
 		} catch (MalformedURLException ex) {
 			ex.printStackTrace();
 		} catch (RemoteException ex) {
 			ex.printStackTrace();
 		} catch (NotBoundException ex) {
 			ex.printStackTrace();
-		}		
-		System.exit(0);
+		}
+
+		return result;
 	}
+
+    private String listToString(List<String> options){
+        String result = "";
+        Iterator<String> iterator = options.iterator();
+        int i = 0;
+        for (String str : options){
+            result += i + ": " + str + "\r\n";
+            i++;
+        } 
+
+        return result;
+    }
 
 	public static void main(String[] args) {
 		QuizMaker qm = new QuizMaker();
