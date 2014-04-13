@@ -15,7 +15,6 @@ public class QuizMaker {
 		Scanner in = new Scanner(System.in);
 
 		System.out.println("Welcome to QuizMaker!");
-		System.out.println("Press (Q) to quit at any point.");
 		System.out.println("Would you like to enter create (C) or edit (E) mode?");
 		
 		boolean modeSelected = false;
@@ -315,14 +314,11 @@ public class QuizMaker {
 		return result;
 	}
 
-	private void isQuit(String str){
-		str = str.toUpperCase();
-		if (str.equals("Q") || str.equals("QUIT")){
-			System.out.println("Are you sure you want to quit? Data has not been saved.");
-			boolean quit = yesNo();
-			if (quit){
-				System.exit(0);
-			}
+	private void run(){
+		System.out.println("Are you sure you want to quit? Data has not been saved."); //add name of quiz saved
+		boolean quit = yesNo();
+		if (quit){
+			System.exit(0);
 		}
 	}
 
@@ -378,6 +374,13 @@ public class QuizMaker {
 
 	public static void main(String[] args) {
 		QuizMaker qm = new QuizMaker();
+
+		try {
+			Runtime.getRuntime().addShutdownHook(qm);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
+
 		qm.launch();
 	}
 }

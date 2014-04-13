@@ -8,12 +8,20 @@ import java.util.Scanner;
 import java.util.List;
 import java.util.Iterator;
 
-public class QuizPlayer {
+public class QuizPlayer extends Thread {
+	String name;
+
 	public void launch(){
-		enterName();
+		boolean nameChosen = false;
+		while (!nameChosen){
+			name = enterName();
+			if (name != null){
+				nameChosen = true;
+			}			
+		}
 	}
 
-	private void enterName(){
+	private String enterName(){
         Scanner in = new Scanner(System.in);
         boolean alphanum = false;
         String str = "";
@@ -53,13 +61,32 @@ public class QuizPlayer {
 		}
 
 		boolean ans = false;
+		String result = null;
 		if (existingUser){
 			System.out.println("Someone has already registered this name, would you like to play as this user?");
 			ans = yesNo();
+			if (!ans){
+				result = null;
+			} else {
+				result = str;
+			}
 		} else {
 			System.out.println("This name has not been registered, would you like to register?");
 			ans = yesNo();
+			if (ans){
+				result = register(str);
+			} else {
+				result = null;
+				System.out.println("Quizzes cannot be played without a valid account.");
+			}
 		}
+
+		return result;
+	}
+
+	private String register(String name){
+		System.out.println("register");
+		return name;
 	}
 
 	private void listQuizzes(){
@@ -98,7 +125,6 @@ public class QuizPlayer {
 
 		do {
 			String ans = in.nextLine();
-			isQuit(ans);
 
 			ans = ans.toUpperCase();
 			if (ans.equals("Y")){
@@ -115,8 +141,23 @@ public class QuizPlayer {
 		return result;
 	}
 
+	private void run(){
+		System.out.println("Are you sure you want to quit? A score has not been submitted."); //data of last score
+		boolean quit = yesNo();
+		if (quit){
+			System.exit(0);
+		}
+	}
+
 	public static void main(String[] args) {
-		QuizPlayer m = new QuizPlayer();
-		m.launch();
+		QuizPlayer qp = new QuizPlayer();
+
+		try {
+			Runtime.getRuntime().addShutdownHook(qp);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
+
+		qp.launch();
 	}
 }
