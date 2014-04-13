@@ -163,10 +163,10 @@ public class QuizMaker {
 		isQuit(str);
 
 		char optionChar = numToChar(optionNum);
-		if (optionChar == null){
+		if (optionChar == 'X'){
 			System.out.println("Sorry, only 5 options allowed!");
 		} else {
-			str = optionChar + str;
+			str = optionChar + ": " + str;
 			addToQuestion = true;			
 		}
 	
@@ -188,7 +188,7 @@ public class QuizMaker {
 	private void setCorrect(){
 		Scanner in = new Scanner(System.in);
 		int optionNum = -1;
-		char answer = null;
+		char answer = 'X';
 		int answerNum = -1;
 		boolean isFinal = false;
 
@@ -203,7 +203,7 @@ public class QuizMaker {
 			System.out.println("Answer:");
 			String str = in.nextLine();
 			answer = Character.toUpperCase(str.charAt(0));
-			answerNum = charToNum(input);
+			answerNum = charToNum(answer);
 			if (answerNum < optionNum){
 				System.out.println("");
 				System.out.println("Is the correct answer " + answer + "?");
@@ -299,7 +299,6 @@ public class QuizMaker {
 		do {
 			String ans = in.nextLine();
 			isQuit(ans);
-			System.out.println("");
 
 			ans = ans.toUpperCase();
 			if (ans.equals("Y")){
@@ -366,14 +365,14 @@ public class QuizMaker {
     	}
     }
 
-    private char charToNum(int i){
-    	switch(c){
+    private char numToChar(int i){
+    	switch(i){
     		case 0:	return 'A';
     		case 1:	return 'B';
     		case 2:	return 'C';
        		case 3:	return 'D';
     		case 4:	return 'E';
-    		default:	return null;
+    		default:	return 'X';
     	}
     }
 

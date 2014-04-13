@@ -207,7 +207,7 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
             result.add(qString);
             System.out.println("added " + qString);
             result.addAll(q.getOptions());
-            result.add("CHANGE TO CHAR: " + q.getCorrect());
+            result.add("Correct answer: " + q.getCorrect());
         }
 
         return result;

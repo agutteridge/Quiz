@@ -15,6 +15,7 @@ public class Question implements Serializable {
 	public Question(String q){
 		this.question = q;
 		this.options = new ArrayList<String>(2);
+		this.correct = 'x';
 	}
 
 	public String getQuestion(){
@@ -33,7 +34,7 @@ public class Question implements Serializable {
 		this.options = newList;
 	}
 
-	public int getCorrect(){
+	public char getCorrect(){
 		return this.correct;
 	}
 
