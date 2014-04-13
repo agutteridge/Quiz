@@ -19,11 +19,13 @@ public interface Compute extends Remote {
 
     void addOption(String str) throws RemoteException;
 
-    void setCorrect(int num) throws RemoteException;
+    void setCorrect(char c) throws RemoteException;
 
     List<String> getOptions() throws RemoteException;
 
     void flush() throws RemoteException;
+
+    List<String> printEntireQuiz() throws RemoteException;
 
 	// void startQuiz(UUID quizID);
 

@@ -135,27 +135,27 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
 
     public String generateUniqueQuizID(String name){
         name = name.toUpperCase();
+        String first4chars = "";
         int i = 0;
-        char[] idArray = new char[4];
 
-        while (i < 4){
-            for (char c : name.toCharArray()){
+        for (char c : name.toCharArray()){
+            if (i < 4){
                 if (c != ' '){
+                    System.out.println(c + " added to array position " + i);
                     i++;
-                    idArray[i] = c;
+                    first4chars += c;
                 }
             }
         }
 
-        String first4chars = name.substring(0,4);
+        i = 0;
         boolean nameInUse = true;
-        int num = 0;
         String quizID = null;
 
         do {
-            quizID = first4chars + num;
+            quizID = first4chars + i;
             nameInUse = sameName(quizID);
-            num++;
+            i++;
         } while (nameInUse);
 
         Quiz q = new Quiz(name, quizID);
@@ -177,7 +177,8 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
     }
 
     public void addQuestion(String q){
-        Question newQuestion = quizInUse.addQuestion(q);
+        Question newQuestion = new Question(q);
+        quizInUse.addQuestion(newQuestion);
         questionInUse = newQuestion;
     }
 
@@ -185,8 +186,8 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         questionInUse.addOption(str);
     }
 
-    public void setCorrect(int num){
-        questionInUse.setCorrect(num);
+    public void setCorrect(char c){
+        questionInUse.setCorrect(c);
     }
 
     public List<String> getOptions(){
@@ -195,8 +196,27 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         return result;
     }
 
+    public List<String> printEntireQuiz(){
+        List<String> result = new ArrayList<String>();
+        List<Question> listOfQuestions = quizInUse.getQuestions();
+
+        for (int i = 0; i < listOfQuestions.size(); i++){
+            int qNum = i+1;
+            Question q = listOfQuestions.get(i);
+            String qString = qNum + ". " + q.getQuestion();
+            result.add(qString);
+            System.out.println("added " + qString);
+            result.addAll(q.getOptions());
+            result.add("CHANGE TO CHAR: " + q.getCorrect());
+        }
+
+        return result;
+    }
+
     public void flush() {
-        System.out.println("FLOOSH");
+        if (quizInUse != null){
+            quizzes.add(quizInUse);
+        }
         final String QUIZFILE = "." + File.separator + "quizdata.xml";
         final String PLAYERFILE = "." + File.separator + "playerdata.xml";
 

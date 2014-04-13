@@ -6,9 +6,7 @@ import java.io.Serializable;
 public class Question implements Serializable {
 	private String question;
 	private List<String> options;
-	private int correct;
-	/*evaluates whether question is finished (to be written) or not.*/
-	private boolean pass; 
+	private char correct;
 
 	public Question(){
 		//no-argument constructor for serialisation		
@@ -17,7 +15,6 @@ public class Question implements Serializable {
 	public Question(String q){
 		this.question = q;
 		this.options = new ArrayList<String>(2);
-		this.pass = false;
 	}
 
 	public String getQuestion(){
@@ -40,28 +37,11 @@ public class Question implements Serializable {
 		return this.correct;
 	}
 
-	public void setCorrect(int newInt){
-		this.correct = newInt;	
+	public void setCorrect(char newChar){
+		this.correct = newChar;
 	}
 
-	public boolean hasPassed(){
-		return pass;
-	}
-
-	public void setPassed(boolean newBool){
-		this.pass = newBool;
-	}
-
-	public boolean addOption(String option){
-		if (options.size() > 4){
-			return false;
-		} else {
-			options.add(option);
-			return true;
-		}
-	}
-
-	public String getOptions(int num){
-		return options.get(num);
+	public void addOption(String option){
+		options.add(option);
 	}
 }

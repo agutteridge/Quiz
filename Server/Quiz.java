@@ -8,8 +8,6 @@ public class Quiz implements Serializable {
 	private String quizID;
 	private List<Score> scoreList;
 	private List<Question> questions;
-	/*evaluates whether question is finished (to be written) or not.*/
-	private boolean pass;
 
 	public Quiz(){
 		//no-argument constructor for serialisation
@@ -19,7 +17,6 @@ public class Quiz implements Serializable {
 		this.quizName = name;
 		this.quizID = id;
 	    this.scoreList = new SortedScoreList();
-	    this.pass = false;
 	}
 
 	public String getName(){
@@ -54,23 +51,11 @@ public class Quiz implements Serializable {
 		this.questions = newList;
 	}
 
-	public boolean hasPassed(){
-		return this.pass;
-	}
-
-	public void setPass(boolean newBool){
-		this.pass = newBool;
-	}
-
-	public Question addQuestion(String q){
+	public void addQuestion(Question q){
 		if (questions == null){
 			questions = new ArrayList<Question>();
-		} else if (questions.size() > 9){
-			return null;
-		}
+		} 
 
-		Question newQuestion = new Question(q);
-		questions.add(newQuestion);
-		return newQuestion;
+		questions.add(q);
 	}
 }

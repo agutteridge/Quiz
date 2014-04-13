@@ -19,6 +19,7 @@ public class QuizMaker {
 		System.out.println("Would you like to enter create (C) or edit (E) mode?");
 		
 		boolean modeSelected = false;
+
 		do {
 			String str = in.nextLine();
 			if (str.toUpperCase().equals("C")){
@@ -31,7 +32,6 @@ public class QuizMaker {
 				isQuit(str);
 				System.out.println("Sorry, your entry wasn't recognised.");
 				System.out.println("");
-				System.out.println("Would you like to enter create (C) or edit (E) mode?");
 				modeSelected = false;
 			}
 		} while (!modeSelected);
@@ -44,23 +44,31 @@ public class QuizMaker {
 		String quizID = generateUniqueQuizID(quizName);
 
 		boolean anotherQuestion = true;
+		int numberOfQuestions = 0;
 		do {
 			newQuestion();
-			System.out.println("Add another question?");
-			anotherQuestion = yesNo();
+			numberOfQuestions++;
+			if (numberOfQuestions < 10){
+				System.out.println("Add another question?");
+				anotherQuestion = yesNo();
+			}
 		} while (anotherQuestion);
 
 		System.out.println("Quiz complete!");
-		printEntireQuiz();
+		printEntireQuiz(quizName);
 		boolean saved = saveOrDiscard();
 		if (saved){
 			System.out.println("Thank you, your quiz (ID: " + quizID + ") has been created!");
 		}
 
 		System.out.println("Return to main menu?");
+		boolean backToMenu = yesNo();
+		if (backToMenu){
+			launch();
+		}
 	}
 
-	private String enterName(){
+	private String enterQuizName(){
 		Scanner in = new Scanner(System.in);
 		boolean isFinal = false;
 		String quizName = "";
@@ -87,6 +95,7 @@ public class QuizMaker {
 			}
 		} while (!isFinal);
 
+		return quizName;
 	}
 
 	private String generateUniqueQuizID(String name){
@@ -95,8 +104,8 @@ public class QuizMaker {
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
 			Compute compute = (Compute) service;
-			quizID = compute.generateUniqueQuizID(quizName);
-			System.out.println("The ID of your quiz \"" + quizName + "\" is " + quizID);
+			quizID = compute.generateUniqueQuizID(name);
+			System.out.println("The ID of your quiz \"" + name + "\" is " + quizID);
 		} catch (MalformedURLException ex) {
 			ex.printStackTrace();
 		} catch (RemoteException ex) {
@@ -129,8 +138,13 @@ public class QuizMaker {
 			ex.printStackTrace();
 		}
 
+		newOption(0);
+		
+		int i = 1;
 		do {
-			newOption();
+			newOption(i);
+			i++;
+			System.out.println("");
 			System.out.println("Add another option?");
 			isFinal = yesNo();
 		} while (isFinal);
@@ -140,61 +154,69 @@ public class QuizMaker {
 		System.out.println("Question complete!");
 	}
 
-	private void newOption(){
+	private void newOption(int optionNum){
 		Scanner in = new Scanner(System.in);
-		boolean isFinal = false;
+		boolean addToQuestion = false;
 		String str = "";
 		System.out.println("New option:");
 		str = in.nextLine();
 		isQuit(str);
 
-		try {
-			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
-			Compute compute = (Compute) service;
-			compute.addOption(str);
-		} catch (MalformedURLException ex) {
-			ex.printStackTrace();
-		} catch (RemoteException ex) {
-			ex.printStackTrace();
-		} catch (NotBoundException ex) {
-			ex.printStackTrace();
+		char optionChar = numToChar(optionNum);
+		if (optionChar == null){
+			System.out.println("Sorry, only 5 options allowed!");
+		} else {
+			str = optionChar + str;
+			addToQuestion = true;			
+		}
+	
+		if (addToQuestion){
+			try {
+				Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
+				Compute compute = (Compute) service;
+				compute.addOption(str);
+			} catch (MalformedURLException ex) {
+				ex.printStackTrace();
+			} catch (RemoteException ex) {
+				ex.printStackTrace();
+			} catch (NotBoundException ex) {
+				ex.printStackTrace();
+			}
 		}
 	}
 
 	private void setCorrect(){
-		List<String> questionOptions;
+		Scanner in = new Scanner(System.in);
 		int optionNum = -1;
+		char answer = null;
+		int answerNum = -1;
+		boolean isFinal = false;
+
+		List<String> questionOptions;
 		questionOptions = getOptions();
 		optionNum = questionOptions.size();
-		System.out.println("highest option number: " + optionNum);
+		
 		System.out.println(listToString(questionOptions));
 
-		Scanner in = new Scanner(System.in);
-		boolean isFinal = false;
-		int ans = -1;
-
-		System.out.println("Answer number:");
-		do {
+		while (!isFinal) {
+			System.out.println("");
+			System.out.println("Answer:");
 			String str = in.nextLine();
-			try {
-				ans = Integer.parseInt(str);
-				if (ans < optionNum && ans >= 0){
-					isFinal = true;
-				} else {
-					int highest = optionNum - 1;
-					System.out.println("");
-					System.out.println("Please choose a value between 0 and " + highest + ".");
-				}
-			} catch (NumberFormatException e){
+			answer = Character.toUpperCase(str.charAt(0));
+			answerNum = charToNum(input);
+			if (answerNum < optionNum){
 				System.out.println("");
-				System.out.println("Please enter a numerical value.");
+				System.out.println("Is the correct answer " + answer + "?");
+				isFinal = yesNo();
+			} else {
+				System.out.println("Invalid option.");
 			}
-		} while (!isFinal);
+		}
 
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
 			Compute compute = (Compute) service;
-			compute.setCorrect(ans);
+			compute.setCorrect(answer);
 		} catch (MalformedURLException ex) {
 			ex.printStackTrace();
 		} catch (RemoteException ex) {
@@ -204,11 +226,15 @@ public class QuizMaker {
 		}
 	}
 
-	private void printEntireQuiz(){
+	private void printEntireQuiz(String name){
+        System.out.println("Displaying " + name + "...");
+        System.out.println("");
+
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
 			Compute compute = (Compute) service;
-			compute.printEntireQuiz();
+			List<String> quizToPrint = compute.printEntireQuiz();
+			System.out.println(listToString(quizToPrint));
 		} catch (MalformedURLException ex) {
 			ex.printStackTrace();
 		} catch (RemoteException ex) {
@@ -237,7 +263,6 @@ public class QuizMaker {
 			try {
 				Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
 				Compute compute = (Compute) service;
-				compute.save();
 				compute.flush();
 				return true;
 			} catch (MalformedURLException ex) {
@@ -320,21 +345,40 @@ public class QuizMaker {
 		return result;
 	}
 
-    private String listToString(List<String> options){
+    private String listToString(List<String> strings){
         String result = "";
-        Iterator<String> iterator = options.iterator();
-        int i = 0;
-        for (String str : options){
-            result += i + ": " + str + "\r\n";
-            i++;
+        Iterator<String> iterator = strings.iterator();
+        for (String str : strings){
+           	result += str + "\r\n";
         } 
 
         return result;
     }
 
+    private int charToNum(char c){
+    	switch(c){
+    		case 'A':	return 0;
+    		case 'B':	return 1;
+    		case 'C':	return 2;
+       		case 'D':	return 3;
+    		case 'E':	return 4;
+    		default:	return 6;
+    	}
+    }
+
+    private char charToNum(int i){
+    	switch(c){
+    		case 0:	return 'A';
+    		case 1:	return 'B';
+    		case 2:	return 'C';
+       		case 3:	return 'D';
+    		case 4:	return 'E';
+    		default:	return null;
+    	}
+    }
+
 	public static void main(String[] args) {
 		QuizMaker qm = new QuizMaker();
 		qm.launch();
-		qm.flush();
 	}
 }
