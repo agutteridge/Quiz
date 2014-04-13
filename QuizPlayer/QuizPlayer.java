@@ -15,11 +15,11 @@ public class QuizPlayer {
 
 	private void enterName(){
         Scanner in = new Scanner(System.in);
-        System.out.println("Please enter a username:");
         boolean alphanum = false;
         String str = "";
 	        
         while (!alphanum) {
+        	System.out.println("Please enter a username:");
             str = in.nextLine();
             char[] charArray = str.toCharArray();
         
@@ -36,21 +36,30 @@ public class QuizPlayer {
 
             if (!alphanum){
                 System.out.println("Sorry, only alphanumeric characters can be used.");
-                System.out.println("Please enter a username:");
             }
         }
 
+        boolean existingUser = true;
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
 			Compute compute = (Compute) service;
-			compute.enterName(str);
+			existingUser = compute.searchUser(str);
 		} catch (MalformedURLException ex) {
 			ex.printStackTrace();
 		} catch (RemoteException ex) {
 			ex.printStackTrace();
 		} catch (NotBoundException ex) {
 			ex.printStackTrace();
-		}		
+		}
+
+		boolean ans = false;
+		if (existingUser){
+			System.out.println("Someone has already registered this name, would you like to play as this user?");
+			ans = yesNo();
+		} else {
+			System.out.println("This name has not been registered, would you like to register?");
+			ans = yesNo();
+		}
 	}
 
 	private void listQuizzes(){
@@ -63,7 +72,6 @@ public class QuizPlayer {
 			quizNameList = compute.getQuizNames();
 			quizTotal = quizNameList.size();
 			System.out.println(listToString(quizNameList));
-			chooseQuiz(quizTotal);
 		} catch (MalformedURLException ex) {
 			ex.printStackTrace();
 		} catch (RemoteException ex) {
@@ -73,17 +81,39 @@ public class QuizPlayer {
 		}
 	}
 
-    private String listToString(List<String> options){
+    private String listToString(List<String> strings){
         String result = "";
-        Iterator<String> iterator = options.iterator();
-        int i = 0;
-        for (String str : options){
-            result += i + ": " + str + "\r\n";
-            i++;
+        Iterator<String> iterator = strings.iterator();
+        for (String str : strings){
+           	result += str + "\r\n";
         } 
 
         return result;
     }
+
+	private boolean yesNo(){
+		Scanner in = new Scanner(System.in);
+		boolean result = false;
+		boolean correctInput = false;
+
+		do {
+			String ans = in.nextLine();
+			isQuit(ans);
+
+			ans = ans.toUpperCase();
+			if (ans.equals("Y")){
+				result = true;
+				correctInput = true;
+			} else if (ans.equals("N")){
+				result = false;
+				correctInput = true;
+			} else {
+				System.out.println("Sorry, your entry wasn't recognised.");
+			}
+		} while (!correctInput);
+
+		return result;
+	}
 
 	public static void main(String[] args) {
 		QuizPlayer m = new QuizPlayer();

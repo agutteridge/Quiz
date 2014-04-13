@@ -11,7 +11,7 @@ public interface Compute extends Remote {
 	*/
     List<String> getQuizNames() throws RemoteException;
 
-	void enterName(String name) throws RemoteException;
+	boolean searchUser(String name) throws RemoteException;
 
 	String generateUniqueQuizID(String name) throws RemoteException;
 

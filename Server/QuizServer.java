@@ -126,13 +126,6 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         return result;
     }
 
-    public void enterName(String name){
-        // if (searchUser(name)) {
-
-        // }
-        System.out.println("Searching for player \'" + name + "\'");
-    }
-
     public String generateUniqueQuizID(String name){
         name = name.toUpperCase();
         String first4chars = "";
@@ -212,6 +205,10 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
 
         return result;
     }
+
+    public boolean searchUser(String name){
+        return players.containsKey(name);
+    }    
 
     public void flush() {
         if (quizInUse != null){
