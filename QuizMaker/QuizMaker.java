@@ -28,7 +28,6 @@ public class QuizMaker {
 				edit();
 				modeSelected = true;				
 			} else {
-				isQuit(str);
 				System.out.println("Sorry, your entry wasn't recognised.");
 				System.out.println("");
 				modeSelected = false;
@@ -75,7 +74,6 @@ public class QuizMaker {
 		do {
 			System.out.println("Please enter a name for your quiz (4 chars min, 30 chars max.):");
 			String str = in.nextLine();
-			isQuit(str);
 			System.out.println("");
 
 			if (str.length() < 4){
@@ -122,7 +120,6 @@ public class QuizMaker {
 		String str = "";
 		System.out.println("New question:");
 		str = in.nextLine();
-		isQuit(str);
 		System.out.println("");
 
 		try {
@@ -159,7 +156,6 @@ public class QuizMaker {
 		String str = "";
 		System.out.println("New option:");
 		str = in.nextLine();
-		isQuit(str);
 
 		char optionChar = numToChar(optionNum);
 		if (optionChar == 'X'){
@@ -277,10 +273,14 @@ public class QuizMaker {
 	}
 
 	private void edit(){
+		Scanner in = new Scanner(System.in);
+		System.out.println("Please enter the quiz ID to see a list of scores.");
+		String str = in.nextLine();
+
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
 			Compute compute = (Compute) service;
-			//lookup quizID
+			
 		} catch (MalformedURLException ex) {
 			ex.printStackTrace();
 		} catch (RemoteException ex) {
@@ -297,7 +297,6 @@ public class QuizMaker {
 
 		do {
 			String ans = in.nextLine();
-			isQuit(ans);
 
 			ans = ans.toUpperCase();
 			if (ans.equals("Y")){
@@ -312,14 +311,6 @@ public class QuizMaker {
 		} while (!correctInput);
 
 		return result;
-	}
-
-	private void run(){
-		System.out.println("Are you sure you want to quit? Data has not been saved."); //add name of quiz saved
-		boolean quit = yesNo();
-		if (quit){
-			System.exit(0);
-		}
 	}
 
 	private List<String> getOptions(){
@@ -374,13 +365,6 @@ public class QuizMaker {
 
 	public static void main(String[] args) {
 		QuizMaker qm = new QuizMaker();
-
-		try {
-			Runtime.getRuntime().addShutdownHook(qm);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}	
-
 		qm.launch();
 	}
 }

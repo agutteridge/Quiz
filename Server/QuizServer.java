@@ -20,6 +20,7 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
     public static List<Quiz> quizzes;
     private Quiz quizInUse;
     private Question questionInUse;
+    private Player playerInUse;
     // using member fields to store reference to Quiz (QuizMaker) and Player (QuizPlayer)? objects
 
     public QuizServer() throws RemoteException {
@@ -119,8 +120,10 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         List<String> result = new ArrayList<String>(quizzes.size());
         
         Iterator<Quiz> iterator = quizzes.iterator();
-        for (Quiz q : quizzes){
-            result.add(q.getName());
+        for (int i = 0; i < quizzes.size(); i++){
+            Quiz q = quizzes.get(i);
+            int num = i + 1;
+            result.add(num + ". " + q.getName());
         } 
 
         return result;
@@ -134,7 +137,6 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         for (char c : name.toCharArray()){
             if (i < 4){
                 if (c != ' '){
-                    System.out.println(c + " added to array position " + i);
                     i++;
                     first4chars += c;
                 }
@@ -208,12 +210,20 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
 
     public boolean searchUser(String name){
         return players.containsKey(name);
-    }    
+    }
+
+    public void enterPlayerData(List<String> list){
+        String username = list.get(0);
+        String name = list.get(1);
+        String email = list.get(2);
+        Player p = new Player(username, name, email);
+
+        players.put(username, p);
+        playerInUse = p;
+        flush();
+    }
 
     public void flush() {
-        if (quizInUse != null){
-            quizzes.add(quizInUse);
-        }
         final String QUIZFILE = "." + File.separator + "quizdata.xml";
         final String PLAYERFILE = "." + File.separator + "playerdata.xml";
 
@@ -233,15 +243,13 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         }
 
         if (filename.equals("." + File.separator + "quizdata.xml")){
-            List<Quiz> listToWrite = new ArrayList<Quiz>(quizzes.size());
-            for (Quiz q : quizzes) {
-                listToWrite.add(q);
-            }
+            List<Quiz> listToWrite = quizzes;
             System.out.println("Writing quizzes");
             encode.writeObject(listToWrite);
         } else if (filename.equals("." + File.separator + "playerdata.xml")){
+            ConcurrentMap<String, Player> mapToWrite = players;
             System.out.println("Writing players");
-            encode.writeObject(players);
+            encode.writeObject(mapToWrite);
         }
         System.out.println("DONE!");
 

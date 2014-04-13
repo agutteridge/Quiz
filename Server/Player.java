@@ -1,5 +1,3 @@
-import java.util.UUID;
-import java.util.Calendar;
 import java.io.Serializable;
 
 /**
@@ -7,15 +5,19 @@ import java.io.Serializable;
 * 
 * Nicknames are chosen by the player upon registration and are unique on the system.
 */
-public abstract class Player implements Serializable {
+public class Player implements Serializable {
 	private String nick;
-	private Calendar dob;
+	private String realName;
 	private String email;
 
-	public Player(String n, String stringDate, String e){
+	public Player(){
+		//no-argument constructor for serialisation		
+	}
+
+	public Player(String n, String name, String e){
 		this.nick = n;
+		this.realName = name;
 		this.email = e;
-		parseDOB(stringDate);
 	}
 
 	public String getNick(){
@@ -26,12 +28,12 @@ public abstract class Player implements Serializable {
 		this.nick = newString;
 	}
 
-	public Calendar getDOB(){
-		return this.dob;
+	public String getName(){
+		return this.realName;
 	}
 
-	public void setDOB(Calendar newCalendar){
-		this.dob = newCalendar;
+	public void setName(String newString){
+		this.realName = newString;
 	}
 
 	public String getEmail(){
@@ -40,15 +42,5 @@ public abstract class Player implements Serializable {
 
 	public void setEmail(String newString){
 		this.email = newString;
-	}
-
-	public void parseDOB(String str){
-		Calendar result = Calendar.getInstance();
-		int day = Integer.parseInt(str.substring(0,2));
-		int month = Integer.parseInt(str.substring(3,5));
-		int year = Integer.parseInt(str.substring(6,10));
-
-		result.set(year, month, day);
-		setDOB(result);
 	}
 }

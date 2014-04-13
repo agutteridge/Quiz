@@ -1,4 +1,4 @@
-import java.util.UUID;
+import java.util.Calendar;
 /**
 * A Score object that contains data about the player, the score achieved and 
 * the quiz played.
@@ -6,26 +6,18 @@ import java.util.UUID;
 public class Score implements Comparable {
 	private String playerName;
 	private int points;
-	private int total;
-	private double percentage;
 	private String quizID;
+	private Calendar datePlayed;
 
 	public Score(){
 		//no-argument constructor for serialisation		
 	}
 
-	public Score(int s, int t, String p, String q){
+	public Score(int s, String p, String q){
 		this.playerName = p;
 		this.points = s;
-		this.total = t;
 		this.quizID = q;
-		percentCalc();
-	}
-
-	private void percentCalc(){
-		double decimal = (double) points / (double) total;
-		double result = decimal * 100;
-		setPercentage(result);
+		datePlayed = Calendar.getInstance();
 	}
 
 	public String getName(){
@@ -52,20 +44,20 @@ public class Score implements Comparable {
 		this.total = newInt;
 	}
 
-	public double getPercentage(){
-		return this.percentage;
-	}
-
-	public void setPercentage(double newDouble){
-		this.percentage = newDouble;
-	}
-
 	public String getQuizID(){
 		return quizID;
 	}
 
 	public void setQuizID(String newString){
 		this.quizID = newString;
+	}
+
+	public Calendar getDatePlayed(){
+		return this.datePlayed;
+	}
+
+	public void setDatePlayed(Calendar newCal){
+		this.datePlayed = newCal;
 	}
 
 	/**

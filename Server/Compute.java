@@ -27,7 +27,9 @@ public interface Compute extends Remote {
 
     List<String> printEntireQuiz() throws RemoteException;
 
-	// void startQuiz(UUID quizID);
+    void enterPlayerData(List<String> list) throws RemoteException;
+
+    // void startQuiz(UUID quizID);
 
 	// void sendPoints(int points);
 

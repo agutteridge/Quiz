@@ -6,19 +6,23 @@ import java.rmi.RemoteException;
 import java.rmi.NotBoundException;
 import java.util.Scanner;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Iterator;
 
-public class QuizPlayer extends Thread {
-	String name;
+public class QuizPlayer {
 
 	public void launch(){
-		boolean nameChosen = false;
-		while (!nameChosen){
-			name = enterName();
-			if (name != null){
-				nameChosen = true;
-			}			
+		System.out.println("*QUIZZES*");
+		System.out.println("Play to win great prizes!");
+		String username = null;
+		while (username == null){
+			username = enterName();
 		}
+
+		System.out.println("");
+		System.out.println("Please enter a number to play the corresponding quiz:");
+		int highestOption = listQuizzes();
+		selectQuiz(highestOption);
 	}
 
 	private String enterName(){
@@ -63,7 +67,7 @@ public class QuizPlayer extends Thread {
 		boolean ans = false;
 		String result = null;
 		if (existingUser){
-			System.out.println("Someone has already registered this name, would you like to play as this user?");
+			System.out.println("Someone has already registered this username, would you like to play as this user?");
 			ans = yesNo();
 			if (!ans){
 				result = null;
@@ -71,7 +75,7 @@ public class QuizPlayer extends Thread {
 				result = str;
 			}
 		} else {
-			System.out.println("This name has not been registered, would you like to register?");
+			System.out.println("This username has not been registered, would you like to register?");
 			ans = yesNo();
 			if (ans){
 				result = register(str);
@@ -85,13 +89,39 @@ public class QuizPlayer extends Thread {
 	}
 
 	private String register(String name){
-		System.out.println("register");
+		Scanner in = new Scanner(System.in);
+		List<String> list = new ArrayList<String>();
+		list.add(name);
+
+		System.out.println("Please enter the following details:");
+		System.out.print("Your first name and surname: ");
+		String str = in.nextLine();
+		list.add(str);
+
+		System.out.print("Your email address: ");
+		str = in.nextLine();
+		list.add(str);
+
+		try {
+			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
+			Compute compute = (Compute) service;
+			compute.enterPlayerData(list);
+		} catch (MalformedURLException ex) {
+			ex.printStackTrace();
+		} catch (RemoteException ex) {
+			ex.printStackTrace();
+		} catch (NotBoundException ex) {
+			ex.printStackTrace();
+		}
+
+		System.out.println("Great! You've been registered!");
+		System.out.println("");
 		return name;
 	}
 
-	private void listQuizzes(){
+	private int listQuizzes(){
 		List<String> quizNameList;
-		int quizTotal;
+		int quizTotal = 0;
 
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
@@ -106,6 +136,12 @@ public class QuizPlayer extends Thread {
 		} catch (NotBoundException ex) {
 			ex.printStackTrace();
 		}
+
+		return quizTotal;
+	}
+
+	private void selectQuiz(int max){
+		System.out.println("CHOOSE WISELY.");
 	}
 
     private String listToString(List<String> strings){
@@ -141,23 +177,8 @@ public class QuizPlayer extends Thread {
 		return result;
 	}
 
-	private void run(){
-		System.out.println("Are you sure you want to quit? A score has not been submitted."); //data of last score
-		boolean quit = yesNo();
-		if (quit){
-			System.exit(0);
-		}
-	}
-
 	public static void main(String[] args) {
 		QuizPlayer qp = new QuizPlayer();
-
-		try {
-			Runtime.getRuntime().addShutdownHook(qp);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}	
-
 		qp.launch();
 	}
 }
