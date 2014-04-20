@@ -6,6 +6,9 @@ import java.io.Serializable;
 
 /**
 * A list which orders scores as they are added.
+*
+* Scores are added from the end, so scores with the same points are in chronological
+* order.
 */
 public class SortedScoreList extends AbstractSequentialList implements Serializable {
 	private List<Score> list;
@@ -29,14 +32,14 @@ public class SortedScoreList extends AbstractSequentialList implements Serializa
 			list.add(newScore);
 			inserted = true;
 		} else {
-			for (int i = 0; i < list.size(); i++) {
-				Score nextScore = list.get(i);
-				int comparison = newScore.compareTo(nextScore);
+			for (int i = list.size() - 1; i >= 0; i--) {
+				Score prevScore = list.get(i);
+				int comparison = newScore.compareTo(prevScore);
 				if (comparison <= 0){
-					list.add(i, newScore);
-					i = list.size() + 1;
+					list.add(i+1, newScore);
+					i = -1;
 					inserted = true;
-				}
+				} 
 			}
 
 			if (!inserted){

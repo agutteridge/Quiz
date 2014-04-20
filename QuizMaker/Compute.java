@@ -11,6 +11,16 @@ public interface Compute extends Remote {
 	*/
     List<String> getQuizNames() throws RemoteException;
 
+    /**
+    * Quiz Player and Maker client programs.
+    * 
+    * Server searches for ID of quiz to be played provided by the client.
+    * 
+    * @return true if found, false if quiz with quizID does not exist.
+    * @param String of quiz ID to search for
+    */ 
+    boolean selectQuiz(String quizID) throws RemoteException;
+
 	void enterName(String name) throws RemoteException;
 
 	String generateUniqueQuizID(String name) throws RemoteException;
@@ -27,13 +37,7 @@ public interface Compute extends Remote {
 
     List<String> printEntireQuiz() throws RemoteException;
 
-	// void startQuiz(UUID quizID);
+    List<String> getTop10() throws RemoteException;
 
-	// void sendPoints(int points);
-
-	// void listHighScores(String nickname); //list in batches of 10, enable scrolldown?
-
-	// void listHighScores(String nickname, UUID quizID); //as above
-
-	// void listHighScores(UUID quizID); //as above
+    String getWinner() throws RemoteException;
 }

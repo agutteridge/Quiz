@@ -51,7 +51,7 @@ public interface Compute extends Remote {
     void enterPlayerData(List<String> list) throws RemoteException;
 
     /**
-    * Quiz Player client program.
+    * Quiz Player and Maker client programs.
     * 
     * Server searches for ID of quiz to be played provided by the client.
     * 

@@ -213,6 +213,24 @@ public class QuizMaker {
 		}
 	}
 
+	private List<String> getOptions(){
+		List<String> result = null;
+
+		try {
+			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
+			Compute compute = (Compute) service;
+			result = compute.getOptions();
+		} catch (MalformedURLException ex) {
+			ex.printStackTrace();
+		} catch (RemoteException ex) {
+			ex.printStackTrace();
+		} catch (NotBoundException ex) {
+			ex.printStackTrace();
+		}
+
+		return result;
+	}
+
 	private void printEntireQuiz(String name){
         System.out.println("Displaying " + name + "...");
         System.out.println("");
@@ -265,14 +283,33 @@ public class QuizMaker {
 	}
 
 	private void monitor(){
-		Scanner in = new Scanner(System.in);
-		System.out.println("Please enter the quiz ID to see a list of scores.");
-		String str = in.nextLine();
+		boolean quizSelected = false;
+		while (!quizSelected){
+			quizSelected = selectQuiz();		
+		}
+				//for testing purposes
+		getTop10();
+		getWinner();
+	}
 
+	private boolean selectQuiz(){
+		Scanner in = new Scanner(System.in);
+		boolean chosen = false;
+		String chosenQuiz = "";
+
+		while (!chosen){
+			System.out.println("Please enter a Quiz ID (4 letters + number).");
+			chosenQuiz = in.nextLine();
+			chosenQuiz = chosenQuiz.toUpperCase();
+			System.out.println("Play " + chosenQuiz + "?");
+			chosen = yesNo();
+		}
+		
+		boolean success = false;
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
 			Compute compute = (Compute) service;
-			
+			success = compute.selectQuiz(chosenQuiz);
 		} catch (MalformedURLException ex) {
 			ex.printStackTrace();
 		} catch (RemoteException ex) {
@@ -280,6 +317,39 @@ public class QuizMaker {
 		} catch (NotBoundException ex) {
 			ex.printStackTrace();
 		}
+
+		if (!success) {
+			System.out.println("Sorry, the quiz ID was not recognised.");
+		}
+		return success;
+	}
+
+	private void getTop10(){
+		try {
+			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
+			Compute compute = (Compute) service;
+			System.out.println(listToString(compute.getTop10()));
+		} catch (MalformedURLException ex) {
+			ex.printStackTrace();
+		} catch (RemoteException ex) {
+			ex.printStackTrace();
+		} catch (NotBoundException ex) {
+			ex.printStackTrace();
+		}		
+	}
+
+	private void getWinner(){
+		try {
+			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
+			Compute compute = (Compute) service;
+			System.out.println(compute.getWinner());
+		} catch (MalformedURLException ex) {
+			ex.printStackTrace();
+		} catch (RemoteException ex) {
+			ex.printStackTrace();
+		} catch (NotBoundException ex) {
+			ex.printStackTrace();
+		}		
 	}
 
 	private boolean yesNo(){
@@ -301,24 +371,6 @@ public class QuizMaker {
 				System.out.println("Sorry, your entry wasn't recognised.");
 			}
 		} while (!correctInput);
-
-		return result;
-	}
-
-	private List<String> getOptions(){
-		List<String> result = null;
-
-		try {
-			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
-			Compute compute = (Compute) service;
-			result = compute.getOptions();
-		} catch (MalformedURLException ex) {
-			ex.printStackTrace();
-		} catch (RemoteException ex) {
-			ex.printStackTrace();
-		} catch (NotBoundException ex) {
-			ex.printStackTrace();
-		}
 
 		return result;
 	}
