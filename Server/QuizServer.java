@@ -191,11 +191,16 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         } else {
             for (int i = 0; i < 10 && i < numberOfScores; i++){
                 Score s = scoreList.get(i);
-                String playerName = s.getName();
                 int points = s.getPoints();
+                String playerNick = s.getNick();
                 Calendar datePlayed = s.getDatePlayed();
+                
+                Player p = players.get(playerNick);
+                String playerName = p.getName();
+                String email = p.getEmail();
 
-                String str = playerName + ": " + points + " points, played " + formatDate(datePlayed); 
+                String str = playerName + "(\"" + playerNick + "\")" + ": " + points + 
+                    " points, played " + formatDate(datePlayed) + ", " + email; 
                 result.add(str);
             }
         }
@@ -210,11 +215,16 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
             return "No scores available.";
         } else {
             Score s = scoreList.get(0);
-            String playerName = s.getName();
             int points = s.getPoints();
+            String playerNick = s.getNick();
             Calendar datePlayed = s.getDatePlayed();
+            
+            Player p = players.get(playerNick);
+            String playerName = p.getName();
+            String email = p.getEmail();
 
-            result = playerName + ": " + points + " points, played " + formatDate(datePlayed); 
+            result = playerName + "(\"" + playerNick + "\")" + ": " + points + 
+                " points, played " + formatDate(datePlayed) + ", " + email; 
         }
 
         return result;
@@ -296,9 +306,9 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
     }
 
     private void saveScore(int num){
-        String playerName = playerInUse.getName();
+        String playerNick = playerInUse.getNick();
         String qid = quizInUse.getQuizID();
-        Score newScore = new Score(num, playerName, qid);
+        Score newScore = new Score(num, playerNick, qid);
         quizInUse.addScore(newScore);
         flush();
     }

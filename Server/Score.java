@@ -4,7 +4,7 @@ import java.util.Calendar;
 * the quiz played.
 */
 public class Score implements Comparable {
-	private String playerName;
+	private String playerNick;
 	private int points;
 	private String quizID;
 	private Calendar datePlayed;
@@ -14,18 +14,18 @@ public class Score implements Comparable {
 	}
 
 	public Score(int s, String p, String q){
-		this.playerName = p;
+		this.playerNick = p;
 		this.points = s;
 		this.quizID = q;
 		datePlayed = Calendar.getInstance();
 	}
 
-	public String getName(){
-		return this.playerName;
+	public String getNick(){
+		return this.playerNick;
 	}
 
-	public void setName(String newString){
-		this.playerName = newString;
+	public void setNick(String newString){
+		this.playerNick = newString;
 	}
 
 	public int getPoints(){
