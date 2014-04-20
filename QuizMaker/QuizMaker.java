@@ -250,7 +250,7 @@ public class QuizMaker {
 			try {
 				Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
 				Compute compute = (Compute) service;
-				compute.flush();
+				compute.saveQuiz();
 				return true;
 			} catch (MalformedURLException ex) {
 				ex.printStackTrace();
@@ -264,7 +264,7 @@ public class QuizMaker {
 		return false;
 	}
 
-	private void edit(){
+	private void monitor(){
 		Scanner in = new Scanner(System.in);
 		System.out.println("Please enter the quiz ID to see a list of scores.");
 		String str = in.nextLine();

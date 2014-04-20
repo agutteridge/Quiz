@@ -23,7 +23,7 @@ public interface Compute extends Remote {
 
     List<String> getOptions() throws RemoteException;
 
-    void flush() throws RemoteException;
+    void saveQuiz() throws RemoteException;
 
     List<String> printEntireQuiz() throws RemoteException;
 

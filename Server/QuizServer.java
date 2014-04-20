@@ -194,8 +194,19 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         return result;
     }
 
+    public void saveQuiz(){
+        quizzes.add(quizInUse);
+        flush();
+    }
+
     public boolean searchUser(String name){
-        return players.containsKey(name);
+        boolean result = players.containsKey(name); 
+        
+        if (result) {
+            playerInUse = players.get(name);
+        }
+
+        return result;
     }
 
     public void enterPlayerData(List<String> list){
@@ -227,7 +238,8 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         while (iterator.hasNext()){
             Quiz q = iterator.next();
             String qID = q.getQuizID();
-            if (id.equals(qID)){
+            if (quizID.equals(qID)){
+                quizInUse = q;
                 return true;
             }
         }
@@ -237,6 +249,12 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
     public int getNumberOfQuestions(){
         List<Question> list = quizInUse.getQuestions();
         return list.size();
+    }
+
+    public String getQuestionString(int questionNumber){
+        this.questionInUse = quizInUse.getQuestions().get(questionNumber);
+        int numToPrint = questionNumber + 1;
+        return numToPrint + ". " + this.questionInUse.getQuestion();
     }
 
     public int compareAnswers(char[] charArray){

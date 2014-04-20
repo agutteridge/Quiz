@@ -36,14 +36,6 @@ public class Score implements Comparable {
 		this.points = newInt;
 	}
 
-	public int getTotal(){
-		return this.total;
-	}
-
-	public void setTotal(int newInt){
-		this.total = newInt;
-	}
-
 	public String getQuizID(){
 		return quizID;
 	}
@@ -61,8 +53,8 @@ public class Score implements Comparable {
 	}
 
 	/**
-	* Compares this Score with the specified object for order. Only the scoreNum 
-	* variable of the score objects are compared. Returns a negative integer, 
+	* Compares this Score with the specified object for order. Only the points 
+	* variable of the Score objects are compared. Returns a negative integer, 
 	* zero, or a positive integer if this object is less than, equal to, or 
 	* greater than the specified object. Scores are only comparable to other 
 	* Score objects.  
@@ -84,11 +76,11 @@ public class Score implements Comparable {
 			throw new ClassCastException();
 		}
 
-		double comparePercent = s.getPercentage();
+		double comparePoints = s.getPoints();
 
-		if (percentage == comparePercent){
+		if (this.points == comparePoints){
 			return 0;
-		} else if (percentage > comparePercent){
+		} else if (this.points > comparePoints){
 			return 1;
 		} else {
 			return -1;

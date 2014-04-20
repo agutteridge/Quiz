@@ -61,7 +61,7 @@ public class Quiz implements Serializable {
 
 	public char[] getCorrectArray(){
 		int numberOfQuestions = this.questions.size();
-		char[] result = char[numberOfQuestions];
+		char[] result = new char[numberOfQuestions];
 
 		for (int i = 0; i < numberOfQuestions; i++){
 			Question q = this.questions.get(i);

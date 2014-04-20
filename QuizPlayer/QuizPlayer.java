@@ -25,10 +25,14 @@ public class QuizPlayer {
 		}
 
 		listQuizzes();
-		selectQuiz();		
+		boolean quizSelected = false;
+		while (!quizSelected){
+			quizSelected = selectQuiz();		
+		}
+
 		play();
-		int finalScore = getScore();
-		System.out.println("Thank you for playing! Your score is: " + finalScore + "\r\n");
+		sendAnswers();
+		System.out.println("Thank you for playing! We will email you if you have won!");
 	}
 
 	private String enterName(){
@@ -144,13 +148,15 @@ public class QuizPlayer {
 	}
 
 	private boolean selectQuiz(){
+		Scanner in = new Scanner(System.in);
 		boolean chosen = false;
-		String chosenQuizName = "";
+		String chosenQuiz = "";
 
 		while (!chosen){
-			System.out.println("\r\n" + "Please enter an ID (4 letters + number) to play the corresponding quiz:");
-			searchQuizName();
-			System.out.println("Play " + chosenQuizName + "?");
+			System.out.println("Please enter an ID (4 letters + number) to play the corresponding quiz:");
+			chosenQuiz = in.nextLine();
+			chosenQuiz = chosenQuiz.toUpperCase();
+			System.out.println("Play " + chosenQuiz + "?");
 			chosen = yesNo();
 		}
 		
@@ -167,6 +173,9 @@ public class QuizPlayer {
 			ex.printStackTrace();
 		}
 
+		if (!success) {
+			System.out.println("Sorry, the quiz ID was not recognised.");
+		}
 		return success;
 	}
 
@@ -185,7 +194,7 @@ public class QuizPlayer {
 			ex.printStackTrace();
 		}		
 
-		this.answers = char[numberOfQuestions];
+		this.answers = new char[numberOfQuestions];
 
 		for (int i = 0; i < numberOfQuestions; i++) {
 			playQuestion(i);
@@ -199,7 +208,7 @@ public class QuizPlayer {
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
 			Compute compute = (Compute) service;
-			question = compute.getQuestion(questionNumber);
+			question = compute.getQuestionString(questionNumber);
 			options = compute.getOptions();
 		} catch (MalformedURLException ex) {
 			ex.printStackTrace();
@@ -222,9 +231,9 @@ public class QuizPlayer {
 		char answer = 'X';
 
 		while (answerNum > upperIntBound){
-			System.outprint("Your answer: ");
+			System.out.println("Your answer: ");
 			answer = in.nextLine().charAt(0);
-			answerNum = charToNum(c);
+			answerNum = charToNum(answer);
 			if (answerNum == 6){
 				System.out.println("Sorry, that answer was invalid." + "\r\n");
 			}
@@ -233,13 +242,11 @@ public class QuizPlayer {
 		return answer;
 	}
 
-	private int getScore(){
-		int score = 0;
-
+	private void sendAnswers(){
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
 			Compute compute = (Compute) service;
-			score = compute.compareAnswers(answers);
+			compute.sendAnswers(answers);
 		} catch (MalformedURLException ex) {
 			ex.printStackTrace();
 		} catch (RemoteException ex) {
@@ -247,8 +254,6 @@ public class QuizPlayer {
 		} catch (NotBoundException ex) {
 			ex.printStackTrace();
 		}
-
-		return score;
 	}
 
     private String listToString(List<String> strings){
