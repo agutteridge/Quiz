@@ -3,12 +3,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.io.Serializable;
-
+import java.util.*;
+import java.text.SimpleDateFormat;
 /**
 * A list which orders scores as they are added.
-*
-* Scores are added from the end, so scores with the same points are in chronological
-* order.
 */
 public class SortedScoreList extends AbstractSequentialList<Score> implements Serializable {
 	private List<Score> list;
@@ -32,12 +30,12 @@ public class SortedScoreList extends AbstractSequentialList<Score> implements Se
 			list.add(newScore);
 			inserted = true;
 		} else {
-			for (int i = list.size() - 1; i >= 0; i--) {
-				Score prevScore = list.get(i);
-				int comparison = newScore.compareTo(prevScore);
-				if (comparison <= 0){
-					list.add(i+1, newScore);
-					i = -1;
+			for (int i = 0; i < list.size(); i++) {
+				Score nextScore = list.get(i);
+				int comparison = newScore.compareTo(nextScore);
+				if (comparison > 0){
+					list.add(i, newScore);
+					i = list.size() + 1;
 					inserted = true;
 				} 
 			}
@@ -58,12 +56,5 @@ public class SortedScoreList extends AbstractSequentialList<Score> implements Se
 
 	public int size(){
 		return list.size();
-	}
-
-	public void print(){
-		for (Score s : list) {
-			System.out.print(s.getPoints());
-			System.out.print(", ");
-		}
 	}
 }
