@@ -20,15 +20,15 @@ public class QuizPlayer {
 	}
 
 	public void launch(){
-		System.out.println("*QUIZZES*");
-		System.out.println("Play to win great prizes!");
 		while (this.name == null){
 			this.name = enterName();
 		}
 
 		listQuizzes();
+		selectQuiz();		
 		play();
-		getScore(this.answers);
+		int finalScore = getScore();
+		System.out.println("Thank you for playing! Your score is: " + finalScore + "\r\n");
 	}
 
 	private String enterName(){
@@ -125,54 +125,40 @@ public class QuizPlayer {
 	}
 
 	private void listQuizzes(){
-		List<String> quizNameList = new ArrayList<String>();
+		Scanner in = new Scanner(System.in);
+		List<String> quizList = new ArrayList<String>();
 
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
 			Compute compute = (Compute) service;
-			quizNameList = compute.getQuizNames();
-			this.upperIntBound = quizNameList.size();
-			System.out.println(listToString(quizNameList));
+			quizList = compute.getQuizNamesAndIDs();
+			this.upperIntBound = quizList.size();
+			System.out.println(listToString(quizList));
 		} catch (MalformedURLException ex) {
 			ex.printStackTrace();
 		} catch (RemoteException ex) {
 			ex.printStackTrace();
 		} catch (NotBoundException ex) {
 			ex.printStackTrace();
-		}
-
-		boolean chosen = false;
-		while (!chosen){
-			System.out.println("\r\n" + "Please enter a number to play the corresponding quiz:");
-			int chosenQuiz = selectQuiz();
-			System.out.println("Play " + quizNameList.get(chosenQuiz - 1) + "?");
-			chosen = yesNo();
 		}
 	}
 
-	private int selectQuiz(){
-		Scanner in = new Scanner(System.in);
-		boolean chosen = false;		
-		int num = -1;
-		
-		while (!chosen){
-			String str = in.nextLine();
-			try {
-				num = Integer.parseInt(str);
-				if (num > 0 && num <= this.upperIntBound){
-					chosen = true;
-				} else {
-					System.out.println("\r\n" + "Please enter a number between 0 and " + this.upperIntBound);
-				}
-			} catch (NumberFormatException e){
-				System.out.println("\r\n" + "Number not recognised.");
-			}
-		}
+	private boolean selectQuiz(){
+		boolean chosen = false;
+		String chosenQuizName = "";
 
+		while (!chosen){
+			System.out.println("\r\n" + "Please enter an ID (4 letters + number) to play the corresponding quiz:");
+			searchQuizName();
+			System.out.println("Play " + chosenQuizName + "?");
+			chosen = yesNo();
+		}
+		
+		boolean success = false;
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
 			Compute compute = (Compute) service;
-			compute.selectQuiz(num);
+			success = compute.selectQuiz(chosenQuiz);
 		} catch (MalformedURLException ex) {
 			ex.printStackTrace();
 		} catch (RemoteException ex) {
@@ -181,7 +167,7 @@ public class QuizPlayer {
 			ex.printStackTrace();
 		}
 
-		return num;		
+		return success;
 	}
 
 	private void play(){
@@ -204,10 +190,66 @@ public class QuizPlayer {
 		for (int i = 0; i < numberOfQuestions; i++) {
 			playQuestion(i);
 		}
-
 	}
 
-	private void playQuestion
+	private void playQuestion(int questionNumber){
+		String question = "";
+		List<String> options = new ArrayList<String>();
+
+		try {
+			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
+			Compute compute = (Compute) service;
+			question = compute.getQuestion(questionNumber);
+			options = compute.getOptions();
+		} catch (MalformedURLException ex) {
+			ex.printStackTrace();
+		} catch (RemoteException ex) {
+			ex.printStackTrace();
+		} catch (NotBoundException ex) {
+			ex.printStackTrace();
+		}		
+
+		this.upperIntBound = options.size();
+		System.out.println("\r\n" + question);
+		System.out.println(listToString(options) + "\r\n");
+		char answer = enterAnswer();
+		this.answers[questionNumber] = answer;
+	}
+
+	private char enterAnswer(){
+		Scanner in = new Scanner(System.in);
+		int answerNum = 9;
+		char answer = 'X';
+
+		while (answerNum > upperIntBound){
+			System.outprint("Your answer: ");
+			answer = in.nextLine().charAt(0);
+			answerNum = charToNum(c);
+			if (answerNum == 6){
+				System.out.println("Sorry, that answer was invalid." + "\r\n");
+			}
+		}
+
+		return answer;
+	}
+
+	private int getScore(){
+		int score = 0;
+
+		try {
+			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
+			Compute compute = (Compute) service;
+			score = compute.compareAnswers(answers);
+		} catch (MalformedURLException ex) {
+			ex.printStackTrace();
+		} catch (RemoteException ex) {
+			ex.printStackTrace();
+		} catch (NotBoundException ex) {
+			ex.printStackTrace();
+		}
+
+		return score;
+	}
 
     private String listToString(List<String> strings){
         String result = "";
@@ -254,9 +296,4 @@ public class QuizPlayer {
     		default:	return 6;
     	}
     }
-
-	public static void main(String[] args) {
-		QuizPlayer qp = new QuizPlayer();
-		qp.launch();
-	}
 }

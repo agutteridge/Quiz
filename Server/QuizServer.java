@@ -21,8 +21,6 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
     private Quiz quizInUse;
     private Question questionInUse;
     private Player playerInUse;
-    private boolean write = true;
-    // using member fields to store reference to Quiz (QuizMaker) and Player (QuizPlayer)? objects
 
     public QuizServer() throws RemoteException {
         players = new ConcurrentHashMap<String, Player>();
@@ -211,23 +209,29 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         flush();
     }
 
-    public List<String> getQuizNames(){
-        this.quizWrite = false;
+    public List<String> getQuizNamesAndIDs(){
         List<String> result = new ArrayList<String>(quizzes.size());
         
         Iterator<Quiz> iterator = quizzes.iterator();
         for (int i = 0; i < quizzes.size(); i++){
             Quiz q = quizzes.get(i);
-            int num = i + 1;
-            result.add(num + ". " + q.getName());
+            result.add(q.getQuizID() + ": " + q.getName());
         } 
 
         return result;
     }
 
-    public void selectQuiz(int num){
-        quizInUse = quizzes.get(num);
-        this.quizWrite = true;
+    public boolean selectQuiz(String quizID){
+       Iterator<Quiz> iterator = quizzes.iterator();
+        
+        while (iterator.hasNext()){
+            Quiz q = iterator.next();
+            String qID = q.getQuizID();
+            if (id.equals(qID)){
+                return true;
+            }
+        }
+        return false;
     }
 
     public int getNumberOfQuestions(){
@@ -235,18 +239,35 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         return list.size();
     }
 
+    public int compareAnswers(char[] charArray){
+        char[] correctArray = quizInUse.getCorrectArray();
+        int score = 0;
+        for (int i = 0; i < getNumberOfQuestions(); i++) {
+            if (correctArray[i] == charArray[i]){
+                score++;
+            }
+        }
+        saveScore(score);
+        return score;
+    }
+
+    private void saveScore(int num){
+        String playerName = playerInUse.getName();
+        String qid = quizInUse.getQuizID();
+        Score newScore = new Score(num, playerName, qid);
+        quizInUse.addScore(newScore);
+        flush();
+    }
+
     public void flush() {
         final String QUIZFILE = "." + File.separator + "quizdata.xml";
         final String PLAYERFILE = "." + File.separator + "playerdata.xml";
 
-        if (quizWrite){
-            encode(QUIZFILE);
-        }
-
+        encode(QUIZFILE);
         encode(PLAYERFILE);
     }
 
-    private void encode(String filename){
+    private synchronized void encode(String filename){
         System.out.println("SERIALIZIN' " + filename);
         XMLEncoder encode = null;
         try {

@@ -11,11 +11,13 @@ import java.rmi.NotBoundException;
 public class QuizMaker {
 	private String quizID; 
 
+	public QuizMaker(){
+		this.quizID = "";
+	}
+
 	public void launch(){
 		Scanner in = new Scanner(System.in);
-
-		System.out.println("Welcome to QuizMaker!");
-		System.out.println("Would you like to enter create (C) or edit (E) mode?");
+		System.out.println("Would you like to enter create (C) or monitor (M) mode?");
 		
 		boolean modeSelected = false;
 
@@ -24,8 +26,8 @@ public class QuizMaker {
 			if (str.toUpperCase().equals("C")){
 				create();
 				modeSelected = true;
-			} else if (str.toUpperCase().equals("E")) {
-				edit();
+			} else if (str.toUpperCase().equals("M")) {
+				monitor();
 				modeSelected = true;				
 			} else {
 				System.out.println("Sorry, your entry wasn't recognised.");
@@ -39,7 +41,7 @@ public class QuizMaker {
 		System.out.println("");
 		System.out.println("*CREATE MODE*");
 		String quizName = enterQuizName();
-		String quizID = generateUniqueQuizID(quizName);
+		generateUniqueQuizID(quizName);
 
 		boolean anotherQuestion = true;
 		int numberOfQuestions = 0;
@@ -56,13 +58,7 @@ public class QuizMaker {
 		printEntireQuiz(quizName);
 		boolean saved = saveOrDiscard();
 		if (saved){
-			System.out.println("Thank you, your quiz (ID: " + quizID + ") has been created!");
-		}
-
-		System.out.println("Return to main menu?");
-		boolean backToMenu = yesNo();
-		if (backToMenu){
-			launch();
+			System.out.println("Thank you, your quiz (ID: " + this.quizID + ") has been created!");
 		}
 	}
 
@@ -95,14 +91,12 @@ public class QuizMaker {
 		return quizName;
 	}
 
-	private String generateUniqueQuizID(String name){
-		String quizID = "";
-
+	private void generateUniqueQuizID(String name){
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
 			Compute compute = (Compute) service;
-			quizID = compute.generateUniqueQuizID(name);
-			System.out.println("The ID of your quiz \"" + name + "\" is " + quizID);
+			this.quizID = compute.generateUniqueQuizID(name);
+			System.out.println("The ID of your quiz \"" + name + "\" is " + this.quizID);
 		} catch (MalformedURLException ex) {
 			ex.printStackTrace();
 		} catch (RemoteException ex) {
@@ -110,8 +104,6 @@ public class QuizMaker {
 		} catch (NotBoundException ex) {
 			ex.printStackTrace();
 		}
-
-		return quizID;
 	}
 	
 	private void newQuestion(){
@@ -364,9 +356,4 @@ public class QuizMaker {
     		default:	return 'X';
     	}
     }
-
-	public static void main(String[] args) {
-		QuizMaker qm = new QuizMaker();
-		qm.launch();
-	}
 }

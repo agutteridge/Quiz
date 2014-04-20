@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class QuizMakerLauncher {
+public class QuizPlayerLauncher {
 
 	private boolean yesNo(){
 		Scanner in = new Scanner(System.in);
@@ -26,19 +26,19 @@ public class QuizMakerLauncher {
 	}
 
 	public static void main(String[] args) {
-		QuizMakerLauncher qml = new QuizMakerLauncher(); 
-		QuizMaker qm = new QuizMaker();
-		Scanner in = new Scanner(System.in);
+		QuizPlayerLauncher qpl = new QuizPlayerLauncher();
+		QuizPlayer qp = new QuizPlayer();
 
-		System.out.println("Welcome to QuizMaker!");
-		qm.launch();
+		System.out.println("Welcome to Quiz Player!");
+		System.out.println("Play to win great prizes!");
+		qp.launch();
 
-		System.out.println("Return to main menu?");
-		boolean backToMenu = qml.yesNo();
-		if (backToMenu){
-			qm.launch();
+		System.out.println("Play another quiz?");
+		boolean playAgain = qpl.yesNo();
+		if (playAgain){
+			qp.launch();
 		} else {
-			System.out.println("\r\n" + "Thank you for using Quiz Maker v1.0!");
+			System.out.println("\r\n" + "Thank you for playing! We hope you'll come back soon!");
 		}
 	}
 }
