@@ -101,11 +101,11 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
     }
 
     public String generateUniqueQuizID(String name){
-        name = name.toUpperCase();
+        String upName = name.toUpperCase();
         String first4chars = "";
         int i = 0;
 
-        for (char c : name.toCharArray()){
+        for (char c : upName.toCharArray()){
             if (i < 4){
                 if (c != ' '){
                     i++;
@@ -169,9 +169,8 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
             Question q = listOfQuestions.get(i);
             String qString = qNum + ". " + q.getQuestion();
             result.add(qString);
-            System.out.println("added " + qString);
             result.addAll(q.getOptions());
-            result.add("Correct answer: " + q.getCorrect());
+            result.add("Correct answer: " + q.getCorrect() + "\r\n");
         }
 
         return result;
@@ -223,7 +222,7 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
 
     private String formatDate(Calendar date){
         Date timeAndDate = date.getTime();
-        SimpleDateFormat f = new SimpleDateFormat("ddMMyyyy HH:mm");
+        SimpleDateFormat f = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         return f.format(timeAndDate);
     }
 

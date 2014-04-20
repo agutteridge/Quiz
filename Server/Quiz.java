@@ -14,7 +14,7 @@ public class Quiz {
 	public Quiz(String name, String id){
 		this.quizName = name;
 		this.quizID = id;
-	    this.scoreList = new SortedScoreList();
+	    this.scoreList = new ArrayList<Score>();
 	}
 
 	public String getName(){
@@ -70,6 +70,26 @@ public class Quiz {
 	}
 
 	public void addScore(Score newScore){
-		this.scoreList.add(newScore);
+		boolean inserted = false;
+
+		if (scoreList.size() == 0){
+			scoreList.add(newScore);
+			inserted = true;
+		} else {
+			for (int i = 0; i < scoreList.size(); i++) {
+				Score nextScore = scoreList.get(i);
+				int comparison = newScore.compareTo(nextScore);
+				if (comparison > 0){
+					scoreList.add(i, newScore);
+					i = scoreList.size() + 1;
+					inserted = true;
+				} 
+			}
+
+			if (!inserted){
+				scoreList.add(newScore);
+				inserted = true;
+			}
+		}
 	}
 }

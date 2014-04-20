@@ -49,7 +49,7 @@ public class QuizMaker {
 			newQuestion();
 			numberOfQuestions++;
 			if (numberOfQuestions < 10){
-				System.out.println("Add another question?");
+				System.out.println("Add another question (Y/N)?");
 				anotherQuestion = yesNo();
 			}
 		} while (anotherQuestion);
@@ -127,48 +127,44 @@ public class QuizMaker {
 		}
 
 		newOption(0);
-		
 		int i = 1;
+
 		do {
 			newOption(i);
 			i++;
-			System.out.println("");
-			System.out.println("Add another option?");
-			isFinal = yesNo();
+			if (i < 5){
+				System.out.println("");
+				System.out.println("Add another option (Y/N)?");
+				isFinal = yesNo();
+			} else {
+				System.out.println("\r\n" + "Maximum of 5 options allowed!");
+				isFinal = false;
+			}
 		} while (isFinal);
 
 		setCorrect();
-		System.out.println("");
-		System.out.println("Question complete!");
+		System.out.println("\r\n" + "Question complete!");
 	}
 
 	private void newOption(int optionNum){
 		Scanner in = new Scanner(System.in);
-		boolean addToQuestion = false;
 		String str = "";
-		System.out.println("New option:");
-		str = in.nextLine();
 
 		char optionChar = numToChar(optionNum);
-		if (optionChar == 'X'){
-			System.out.println("Sorry, only 5 options allowed!");
-		} else {
-			str = optionChar + ": " + str;
-			addToQuestion = true;			
-		}
-	
-		if (addToQuestion){
-			try {
-				Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
-				Compute compute = (Compute) service;
-				compute.addOption(str);
-			} catch (MalformedURLException ex) {
-				ex.printStackTrace();
-			} catch (RemoteException ex) {
-				ex.printStackTrace();
-			} catch (NotBoundException ex) {
-				ex.printStackTrace();
-			}
+		System.out.println("New option:");
+		str = in.nextLine();
+		str = "\t" + optionChar + ": " + str;
+
+		try {
+			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
+			Compute compute = (Compute) service;
+			compute.addOption(str);
+		} catch (MalformedURLException ex) {
+			ex.printStackTrace();
+		} catch (RemoteException ex) {
+			ex.printStackTrace();
+		} catch (NotBoundException ex) {
+			ex.printStackTrace();
 		}
 	}
 
@@ -183,16 +179,18 @@ public class QuizMaker {
 		questionOptions = getOptions();
 		optionNum = questionOptions.size();
 		
+		System.out.println("Which of these options is correct?");
 		System.out.println(listToString(questionOptions));
 
 		while (!isFinal) {
-			System.out.println("");
 			System.out.println("Answer:");
 			String str = in.nextLine();
 			answer = str.charAt(0);
 			answerNum = charToNum(answer);
-			if (answerNum <= optionNum){
+
+			if (answerNum < optionNum){
 				System.out.println("");
+				answer = Character.toUpperCase(answer);
 				System.out.println("Is the correct answer " + answer + "?");
 				isFinal = yesNo();
 			} else {
@@ -283,13 +281,27 @@ public class QuizMaker {
 	}
 
 	private void monitor(){
+		Scanner in = new Scanner(System.in);
 		boolean quizSelected = false;
 		while (!quizSelected){
 			quizSelected = selectQuiz();		
 		}
-				//for testing purposes
-		getTop10();
-		getWinner();
+
+		System.out.println("Would you like the top score ('A') or the top 10 scores ('T')?");
+		do {
+			String str = in.nextLine();
+			if (str.toUpperCase().equals("A")){
+				getWinner();
+				modeSelected = true;
+			} else if (str.toUpperCase().equals("T")) {
+				getTop10
+				modeSelected = true;				
+			} else {
+				System.out.println("Sorry, your entry wasn't recognised.");
+				System.out.println("");
+				modeSelected = false;
+			}
+		} while (!modeSelected);
 	}
 
 	private boolean selectQuiz(){

@@ -17,6 +17,7 @@ public class QuizPlayer {
 	public QuizPlayer(){
 		this.name = null;
 		this.upperIntBound = 0;
+		this.answers = null;
 	}
 
 	public void launch(){
@@ -31,6 +32,7 @@ public class QuizPlayer {
 		}
 
 		play();
+
 		int finalScore = sendAnswers();
 		System.out.println("Thank you for playing! Your score is " + finalScore + ".");
 	}
@@ -218,10 +220,11 @@ public class QuizPlayer {
 			ex.printStackTrace();
 		}		
 
-		this.upperIntBound = options.size();
+		this.upperIntBound = options.size() - 1;
 		System.out.println("\r\n" + question);
 		System.out.println(listToString(options));
 		char answer = enterAnswer();
+		answer = Character.toUpperCase(answer);
 		this.answers[questionNumber] = answer;
 	}
 
@@ -234,7 +237,7 @@ public class QuizPlayer {
 			System.out.println("Your answer: ");
 			answer = in.nextLine().charAt(0);
 			answerNum = charToNum(answer);
-			if (answerNum == 6){
+			if (answerNum > upperIntBound){
 				System.out.println("Sorry, that answer was invalid." + "\r\n");
 			}
 		}

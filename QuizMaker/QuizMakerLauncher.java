@@ -27,14 +27,16 @@ public class QuizMakerLauncher {
 
 	public static void main(String[] args) {
 		QuizMakerLauncher qml = new QuizMakerLauncher(); 
-		QuizMaker qm = new QuizMaker();
 		Scanner in = new Scanner(System.in);
 
+		System.out.println("Welcome to QuizMaker!");
+		boolean backToMenu = false;
+		
 		do {
-			System.out.println("Welcome to QuizMaker!");
+			QuizMaker qm = new QuizMaker();
 			qm.launch();
 			System.out.println("\r\n" + "Return to main menu?");
-			boolean backToMenu = qml.yesNo();
+			backToMenu = qml.yesNo();
 		} while (backToMenu);
 
 		System.out.println("\r\n" + "Thank you for using Quiz Maker v1.0!");

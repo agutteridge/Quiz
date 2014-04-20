@@ -27,18 +27,18 @@ public class QuizPlayerLauncher {
 
 	public static void main(String[] args) {
 		QuizPlayerLauncher qpl = new QuizPlayerLauncher();
-		QuizPlayer qp = new QuizPlayer();
 
 		System.out.println("Welcome to Quiz Player!");
 		System.out.println("Play to win great prizes!");
-		qp.launch();
-
-		System.out.println("Play another quiz?");
-		boolean playAgain = qpl.yesNo();
-		if (playAgain){
+	
+		boolean playAgain = false;
+		do {
+			QuizPlayer qp = new QuizPlayer();
 			qp.launch();
-		} else {
-			System.out.println("\r\n" + "Thank you for playing! We hope you'll come back soon!");
-		}
+			System.out.println("Play another quiz?");
+			playAgain = qpl.yesNo();
+		} while (playAgain);
+		
+		System.out.println("\r\n" + "Thank you for playing! We hope you'll come back soon!");
 	}
 }
