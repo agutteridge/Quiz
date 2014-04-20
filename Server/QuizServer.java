@@ -14,6 +14,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.concurrent.*;
 import java.io.File;
+import java.text.SimpleDateFormat;
 
 public class QuizServer extends UnicastRemoteObject implements Compute {
     public static ConcurrentMap<String, Player> players;
@@ -49,22 +50,6 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
 
     public void setQuizzes(List<Quiz> newList){
         this.quizzes = newList;
-    }
-
-    public Quiz getQuizInUse(){
-        return this.quizInUse;
-    }
-
-    public void setQuizInUse(Quiz newQuiz){
-        this.quizInUse = newQuiz;
-    }
-
-    public Question getQuestionInUse(){
-        return this.questionInUse;
-    }
-
-    public void setQuestionInUse(Question newQuestion){
-        this.questionInUse = newQuestion;
     }
 
     private void doesExist(File f, String filename){
@@ -199,6 +184,51 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         flush();
     }
 
+    public List<String> getTop10(){
+        List<Score> scoreList = quizInUse.getScores();
+        int numberOfScores = scoreList.size(); 
+        List<String> result = new ArrayList<String>();
+
+        if (scoreList.isEmpty()){
+            result.add("No scores available.");
+        } else {
+            for (int i = 0; i < 10 && i < numberOfScores; i++){
+                Score s = scoreList.get(i);
+                String playerName = s.getName();
+                int points = s.getPoints();
+                Calendar datePlayed = s.getDatePlayed();
+
+                String str = playerName + ": " + points + " points, played " + formatDate(datePlayed); 
+                result.add(str);
+            }
+        }
+        return result;
+    }
+
+    public String getWinner(){
+        List<Score> scoreList = quizInUse.getScores();
+        String result = "";
+
+        if (scoreList.isEmpty()){
+            return "No scores available.";
+        } else {
+            Score s = scoreList.get(0);
+            String playerName = s.getName();
+            int points = s.getPoints();
+            Calendar datePlayed = s.getDatePlayed();
+
+            result = playerName + ": " + points + " points, played " + formatDate(datePlayed); 
+        }
+
+        return result;
+    }
+
+    private String formatDate(Calendar date){
+        Date timeAndDate = date.getTime();
+        SimpleDateFormat f = new SimpleDateFormat("ddMMyyyy HH:mm");
+        return f.format(timeAndDate);
+    }
+
     public boolean searchUser(String name){
         boolean result = players.containsKey(name); 
         
@@ -223,7 +253,6 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
     public List<String> getQuizNamesAndIDs(){
         List<String> result = new ArrayList<String>(quizzes.size());
         
-        Iterator<Quiz> iterator = quizzes.iterator();
         for (int i = 0; i < quizzes.size(); i++){
             Quiz q = quizzes.get(i);
             result.add(q.getQuizID() + ": " + q.getName());
@@ -309,6 +338,4 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
 
         encode.close();
     }
-    //restrict quiz name to #chars, enable sorting by different params?
-
 }
