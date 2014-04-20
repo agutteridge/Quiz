@@ -15,8 +15,6 @@ public interface Compute extends Remote {
 
 	boolean searchUser(String name) throws RemoteException;
 
-    void enterPlayerData(List<String> list) throws RemoteException;
-
 	String generateUniqueQuizID(String name) throws RemoteException;
 
     void addQuestion(String q) throws RemoteException;
@@ -27,7 +25,13 @@ public interface Compute extends Remote {
 
     void flush() throws RemoteException;
 
-	// void startQuiz(UUID quizID);
+    void enterPlayerData(List<String> list) throws RemoteException;
+
+    List<String> printEntireQuiz() throws RemoteException;
+
+    void selectQuiz(int num) throws RemoteException;
+
+    int getNumberOfQuestions() throws RemoteException;
 
 	// void sendPoints(int points);
 

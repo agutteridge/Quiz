@@ -21,6 +21,7 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
     private Quiz quizInUse;
     private Question questionInUse;
     private Player playerInUse;
+    private boolean write = true;
     // using member fields to store reference to Quiz (QuizMaker) and Player (QuizPlayer)? objects
 
     public QuizServer() throws RemoteException {
@@ -114,19 +115,6 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         }
 
         d.close();        
-    }
-
-    public List<String> getQuizNames(){
-        List<String> result = new ArrayList<String>(quizzes.size());
-        
-        Iterator<Quiz> iterator = quizzes.iterator();
-        for (int i = 0; i < quizzes.size(); i++){
-            Quiz q = quizzes.get(i);
-            int num = i + 1;
-            result.add(num + ". " + q.getName());
-        } 
-
-        return result;
     }
 
     public String generateUniqueQuizID(String name){
@@ -223,11 +211,38 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         flush();
     }
 
+    public List<String> getQuizNames(){
+        this.quizWrite = false;
+        List<String> result = new ArrayList<String>(quizzes.size());
+        
+        Iterator<Quiz> iterator = quizzes.iterator();
+        for (int i = 0; i < quizzes.size(); i++){
+            Quiz q = quizzes.get(i);
+            int num = i + 1;
+            result.add(num + ". " + q.getName());
+        } 
+
+        return result;
+    }
+
+    public void selectQuiz(int num){
+        quizInUse = quizzes.get(num);
+        this.quizWrite = true;
+    }
+
+    public int getNumberOfQuestions(){
+        List<Question> list = quizInUse.getQuestions();
+        return list.size();
+    }
+
     public void flush() {
         final String QUIZFILE = "." + File.separator + "quizdata.xml";
         final String PLAYERFILE = "." + File.separator + "playerdata.xml";
 
-        encode(QUIZFILE);
+        if (quizWrite){
+            encode(QUIZFILE);
+        }
+
         encode(PLAYERFILE);
     }
 

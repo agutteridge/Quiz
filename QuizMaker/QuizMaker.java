@@ -197,9 +197,9 @@ public class QuizMaker {
 			System.out.println("");
 			System.out.println("Answer:");
 			String str = in.nextLine();
-			answer = Character.toUpperCase(str.charAt(0));
+			answer = str.charAt(0);
 			answerNum = charToNum(answer);
-			if (answerNum < optionNum){
+			if (answerNum <= optionNum){
 				System.out.println("");
 				System.out.println("Is the correct answer " + answer + "?");
 				isFinal = yesNo();
@@ -342,6 +342,8 @@ public class QuizMaker {
     }
 
     private int charToNum(char c){
+    	c = Character.toUpperCase(c);
+
     	switch(c){
     		case 'A':	return 0;
     		case 'B':	return 1;

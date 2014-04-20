@@ -10,32 +10,38 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class QuizPlayer {
+	private String name;
+	private int upperIntBound;
+	private char[] answers;
+
+	public QuizPlayer(){
+		this.name = null;
+		this.upperIntBound = 0;
+	}
 
 	public void launch(){
 		System.out.println("*QUIZZES*");
 		System.out.println("Play to win great prizes!");
-		String username = null;
-		while (username == null){
-			username = enterName();
+		while (this.name == null){
+			this.name = enterName();
 		}
 
-		System.out.println("");
-		System.out.println("Please enter a number to play the corresponding quiz:");
-		int highestOption = listQuizzes();
-		selectQuiz(highestOption);
+		listQuizzes();
+		play();
+		getScore(this.answers);
 	}
 
 	private String enterName(){
-        Scanner in = new Scanner(System.in);
-        boolean alphanum = false;
-        String str = "";
+		Scanner in = new Scanner(System.in);
+		boolean alphanum = false;
+		String str = "";
 	        
-        while (!alphanum) {
-        	System.out.println("Please enter a username:");
-            str = in.nextLine();
-            char[] charArray = str.toCharArray();
+		while (!alphanum) {
+			System.out.println("Please enter a username:");
+			str = in.nextLine();
+			char[] charArray = str.toCharArray();
         
-            alphanum = true;
+			alphanum = true;
             if (charArray.length == 0) {
             	alphanum = false;
             } else {
@@ -114,20 +120,18 @@ public class QuizPlayer {
 			ex.printStackTrace();
 		}
 
-		System.out.println("Great! You've been registered!");
-		System.out.println("");
+		System.out.println("Great! You've been registered!" + "\r\n");
 		return name;
 	}
 
-	private int listQuizzes(){
-		List<String> quizNameList;
-		int quizTotal = 0;
+	private void listQuizzes(){
+		List<String> quizNameList = new ArrayList<String>();
 
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
 			Compute compute = (Compute) service;
 			quizNameList = compute.getQuizNames();
-			quizTotal = quizNameList.size();
+			this.upperIntBound = quizNameList.size();
 			System.out.println(listToString(quizNameList));
 		} catch (MalformedURLException ex) {
 			ex.printStackTrace();
@@ -137,12 +141,73 @@ public class QuizPlayer {
 			ex.printStackTrace();
 		}
 
-		return quizTotal;
+		boolean chosen = false;
+		while (!chosen){
+			System.out.println("\r\n" + "Please enter a number to play the corresponding quiz:");
+			int chosenQuiz = selectQuiz();
+			System.out.println("Play " + quizNameList.get(chosenQuiz - 1) + "?");
+			chosen = yesNo();
+		}
 	}
 
-	private void selectQuiz(int max){
-		System.out.println("CHOOSE WISELY.");
+	private int selectQuiz(){
+		Scanner in = new Scanner(System.in);
+		boolean chosen = false;		
+		int num = -1;
+		
+		while (!chosen){
+			String str = in.nextLine();
+			try {
+				num = Integer.parseInt(str);
+				if (num > 0 && num <= this.upperIntBound){
+					chosen = true;
+				} else {
+					System.out.println("\r\n" + "Please enter a number between 0 and " + this.upperIntBound);
+				}
+			} catch (NumberFormatException e){
+				System.out.println("\r\n" + "Number not recognised.");
+			}
+		}
+
+		try {
+			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
+			Compute compute = (Compute) service;
+			compute.selectQuiz(num);
+		} catch (MalformedURLException ex) {
+			ex.printStackTrace();
+		} catch (RemoteException ex) {
+			ex.printStackTrace();
+		} catch (NotBoundException ex) {
+			ex.printStackTrace();
+		}
+
+		return num;		
 	}
+
+	private void play(){
+		int numberOfQuestions = 0;
+
+		try {
+			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
+			Compute compute = (Compute) service;
+			numberOfQuestions = compute.getNumberOfQuestions();
+		} catch (MalformedURLException ex) {
+			ex.printStackTrace();
+		} catch (RemoteException ex) {
+			ex.printStackTrace();
+		} catch (NotBoundException ex) {
+			ex.printStackTrace();
+		}		
+
+		this.answers = char[numberOfQuestions];
+
+		for (int i = 0; i < numberOfQuestions; i++) {
+			playQuestion(i);
+		}
+
+	}
+
+	private void playQuestion
 
     private String listToString(List<String> strings){
         String result = "";
@@ -176,6 +241,19 @@ public class QuizPlayer {
 
 		return result;
 	}
+
+    private int charToNum(char c){
+    	c = Character.toUpperCase(c);
+
+    	switch(c){
+    		case 'A':	return 0;
+    		case 'B':	return 1;
+    		case 'C':	return 2;
+       		case 'D':	return 3;
+    		case 'E':	return 4;
+    		default:	return 6;
+    	}
+    }
 
 	public static void main(String[] args) {
 		QuizPlayer qp = new QuizPlayer();

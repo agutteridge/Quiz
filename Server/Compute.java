@@ -25,11 +25,13 @@ public interface Compute extends Remote {
 
     void flush() throws RemoteException;
 
-    List<String> printEntireQuiz() throws RemoteException;
-
     void enterPlayerData(List<String> list) throws RemoteException;
 
-    // void startQuiz(UUID quizID);
+    List<String> printEntireQuiz() throws RemoteException;
+
+    void selectQuiz(int num) throws RemoteException;
+
+    int getNumberOfQuestions() throws RemoteException;
 
 	// void sendPoints(int points);
 
