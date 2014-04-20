@@ -10,7 +10,7 @@ import java.io.Serializable;
 * Scores are added from the end, so scores with the same points are in chronological
 * order.
 */
-public class SortedScoreList extends AbstractSequentialList implements Serializable {
+public class SortedScoreList extends AbstractSequentialList<Score> implements Serializable {
 	private List<Score> list;
 
 	public SortedScoreList(){

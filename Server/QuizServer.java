@@ -157,9 +157,7 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
     }
 
     public List<String> getOptions(){
-        List<String> result;
-        result = questionInUse.getOptions();
-        return result;
+        return questionInUse.getOptions();
     }
 
     public List<String> printEntireQuiz(){
@@ -306,7 +304,7 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         flush();
     }
 
-    public void flush() {
+    private void flush() {
         final String QUIZFILE = "." + File.separator + "quizdata.xml";
         final String PLAYERFILE = "." + File.separator + "playerdata.xml";
 
@@ -326,7 +324,8 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         }
 
         if (filename.equals("." + File.separator + "quizdata.xml")){
-            List<Quiz> listToWrite = quizzes;
+            List<Quiz> listToWrite = new ArrayList<Quiz>();
+            listToWrite.addAll(quizzes);
             System.out.println("Writing quizzes");
             encode.writeObject(listToWrite);
         } else if (filename.equals("." + File.separator + "playerdata.xml")){
@@ -337,5 +336,16 @@ public class QuizServer extends UnicastRemoteObject implements Compute {
         System.out.println("DONE!");
 
         encode.close();
+    }
+
+    public static void main(String[] args) {
+        try {
+            QuizServer qs = new QuizServer();
+            Quiz q = new Quiz("quizname", "YAYQ0");
+            qs.quizzes.add(q);
+            qs.flush();
+        } catch (RemoteException e){
+            e.printStackTrace();
+        }
     }
 }

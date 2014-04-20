@@ -301,7 +301,7 @@ public class QuizMaker {
 			System.out.println("Please enter a Quiz ID (4 letters + number).");
 			chosenQuiz = in.nextLine();
 			chosenQuiz = chosenQuiz.toUpperCase();
-			System.out.println("Play " + chosenQuiz + "?");
+			System.out.println("Look up " + chosenQuiz + "?");
 			chosen = yesNo();
 		}
 		

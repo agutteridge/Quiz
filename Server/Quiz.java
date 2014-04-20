@@ -1,9 +1,7 @@
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.io.Serializable;
 
-public class Quiz implements Serializable {
+public class Quiz {
 	private String quizName;
 	private String quizID;
 	private List<Score> scoreList;

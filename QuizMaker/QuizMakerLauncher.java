@@ -30,15 +30,14 @@ public class QuizMakerLauncher {
 		QuizMaker qm = new QuizMaker();
 		Scanner in = new Scanner(System.in);
 
-		System.out.println("Welcome to QuizMaker!");
-		qm.launch();
-
-		System.out.println("Return to main menu?");
-		boolean backToMenu = qml.yesNo();
-		if (backToMenu){
+		do {
+			System.out.println("Welcome to QuizMaker!");
 			qm.launch();
-		} else {
-			System.out.println("\r\n" + "Thank you for using Quiz Maker v1.0!");
-		}
+			System.out.println("\r\n" + "Return to main menu?");
+			boolean backToMenu = qml.yesNo();
+		} while (backToMenu);
+
+		System.out.println("\r\n" + "Thank you for using Quiz Maker v1.0!");
+
 	}
 }
