@@ -15,6 +15,11 @@ public class QuizMaker {
 		this.quizID = "";
 	}
 
+	/**
+	* Launch method called from Launcher class.
+	* 
+	* User input determines which mode is chosen, i.e. which methods are called.
+	*/
 	public void launch(){
 		Scanner in = new Scanner(System.in);
 		System.out.println("Would you like to enter create (C) or monitor (M) mode?");
@@ -37,9 +42,13 @@ public class QuizMaker {
 		} while (!modeSelected);
 	}
 
+	/**
+	* Starts 'Create Mode', from which a new quiz can be made. A quiz can have a 
+	* maximum of 10 questions. The user is then prompted to save or discard their
+	* new quiz - saving causes the QuizServer to write the quiz to file.
+	*/
 	private void create(){
-		System.out.println("");
-		System.out.println("*CREATE MODE*");
+		System.out.println("\r\n" + "*CREATE MODE*");
 		String quizName = enterQuizName();
 		generateUniqueQuizID(quizName);
 
@@ -62,6 +71,11 @@ public class QuizMaker {
 		}
 	}
 
+	/**
+	* User input defines the quiz name. Quiz names must be between 4 and 30 characters long.
+	*
+	* @return An acceptable quiz name.
+	*/
 	private String enterQuizName(){
 		Scanner in = new Scanner(System.in);
 		boolean isFinal = false;
@@ -91,6 +105,11 @@ public class QuizMaker {
 		return quizName;
 	}
 
+	/**
+	* The quiz name is used to generate a quiz ID, QuizServer side.
+	* 
+	* @param name - the name of the quiz.
+	*/
 	private void generateUniqueQuizID(String name){
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
@@ -106,6 +125,11 @@ public class QuizMaker {
 		}
 	}
 	
+	/**
+	* Adding a new question with between 2 and 5 options inclusive.
+	*
+	* The question (a String) is sent to the QuizServer to store until the quiz is saved.
+	*/
 	private void newQuestion(){
 		Scanner in = new Scanner(System.in);		
 		boolean isFinal = false;
@@ -146,6 +170,14 @@ public class QuizMaker {
 		System.out.println("\r\n" + "Question complete!");
 	}
 
+	/**
+	* Adding a new option.
+	*
+	* The option (a String) is sent to the QuizServer to store until the quiz is saved.
+	*
+	* @param optionNum - The numerical position of the option, as determined by the 
+	* newQuestion() method.
+	*/
 	private void newOption(int optionNum){
 		Scanner in = new Scanner(System.in);
 		String str = "";
@@ -168,6 +200,12 @@ public class QuizMaker {
 		}
 	}
 
+	/**
+	* The correct option for the question is set. The character must be within the 
+	* appropriate range.
+	* 
+	* The option (a character) is sent to the QuizServer to store until the quiz is saved.
+	*/
 	private void setCorrect(){
 		Scanner in = new Scanner(System.in);
 		int optionNum = -1;
@@ -211,6 +249,11 @@ public class QuizMaker {
 		}
 	}
 
+	/** 
+	* Returns a list of options from the QuizServer.
+	*
+	* @return The List of Strings that represent the options in sequential order.
+	*/
 	private List<String> getOptions(){
 		List<String> result = null;
 
@@ -229,6 +272,11 @@ public class QuizMaker {
 		return result;
 	}
 
+	/** 
+	* Prints a formatted list of the entire quiz from the QuizServer. Each
+	* question is followed by its options, the correct option, and finally a 
+	* line space.
+	*/
 	private void printEntireQuiz(String name){
         System.out.println("Displaying " + name + "...");
         System.out.println("");
@@ -247,6 +295,12 @@ public class QuizMaker {
 		}
 	}
 
+	/**
+	* Asks the user whether the quiz should be saved or discarded. Saving will result in 
+	* file persistence on the QuizServer.
+	*
+	* @return True if the file has been saved, false otherwise.
+	*/
 	private boolean saveOrDiscard(){
 		boolean firstAnswer = false;
 		boolean secondAnswer = false;
@@ -280,7 +334,12 @@ public class QuizMaker {
 		return false;
 	}
 
+	/**
+	* 'Monitor mode' allows the user to input a quiz ID and see either the top score or top
+	* ten scores for the quiz.
+	*/
 	private void monitor(){
+		System.out.println("\r\n" + "*MONITOR MODE*");
 		Scanner in = new Scanner(System.in);
 		boolean quizSelected = false;
 		while (!quizSelected){
@@ -288,13 +347,14 @@ public class QuizMaker {
 		}
 
 		System.out.println("Would you like the top score ('A') or the top 10 scores ('T')?");
+		boolean modeSelected = false;
 		do {
 			String str = in.nextLine();
 			if (str.toUpperCase().equals("A")){
 				getWinner();
 				modeSelected = true;
 			} else if (str.toUpperCase().equals("T")) {
-				getTop10
+				getTop10();
 				modeSelected = true;				
 			} else {
 				System.out.println("Sorry, your entry wasn't recognised.");
@@ -304,6 +364,12 @@ public class QuizMaker {
 		} while (!modeSelected);
 	}
 
+	/**
+	* The user inputs a quiz ID, which is then used as a reference to lookup a Quiz
+	* on the server. If no such quiz exists, the user can enter input again.
+	*
+	* @return True if the quiz is on the server, false otherwise.
+	*/
 	private boolean selectQuiz(){
 		Scanner in = new Scanner(System.in);
 		boolean chosen = false;
@@ -336,6 +402,10 @@ public class QuizMaker {
 		return success;
 	}
 
+	/**
+	* The top 10 Scores and the user details are formatted and retrieved from 
+	* the QuizServer, and then printed client side.
+	*/
 	private void getTop10(){
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
@@ -350,6 +420,10 @@ public class QuizMaker {
 		}		
 	}
 
+	/**
+	* The top Score and the user details are formatted and retrieved from 
+	* the QuizServer, and then printed client side.
+	*/
 	private void getWinner(){
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
@@ -364,6 +438,11 @@ public class QuizMaker {
 		}		
 	}
 
+	/**
+	* Uses user input to answer questions with a Yes/No outcome.
+	*
+	* @return 'Y' keyboard input returns true, 'N' returns false.
+	*/ 
 	private boolean yesNo(){
 		Scanner in = new Scanner(System.in);
 		boolean result = false;
@@ -387,6 +466,11 @@ public class QuizMaker {
 		return result;
 	}
 
+	/**
+	* Concatenates a List of Strings into one String.
+	*
+	* @return String, can be over multiple lines.
+	*/
     private String listToString(List<String> strings){
         String result = "";
         Iterator<String> iterator = strings.iterator();
@@ -397,6 +481,12 @@ public class QuizMaker {
         return result;
     }
 
+    /**
+    * Converts a character into a numerical equivalent.
+    *
+    * @param c - Character to be converted.
+    * @return Corresponding number, or 6 if the character is out of range.
+    */
     private int charToNum(char c){
     	c = Character.toUpperCase(c);
 
@@ -410,6 +500,12 @@ public class QuizMaker {
     	}
     }
 
+    /**
+    * Converts a number into a character.
+    *
+    * @param i - Number (int) to be converted.
+    * @return Corresponding character, or 'X' if the number is out of range.
+    */
     private char numToChar(int i){
     	switch(i){
     		case 0:	return 'A';

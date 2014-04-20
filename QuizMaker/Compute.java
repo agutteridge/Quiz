@@ -18,7 +18,7 @@ public interface Compute extends Remote {
     * Server searches for ID of quiz to be played provided by the client.
     * 
     * @return true if found, false if quiz with quizID does not exist.
-    * @param String of quiz ID to search for
+    * @param quizID - String of quiz ID to search for
     */ 
     boolean selectQuiz(String quizID) throws RemoteException;
 
@@ -37,7 +37,7 @@ public interface Compute extends Remote {
     * 
     * Sends quiz name String to the QuizServer for creation of a unique ID.
     * 
-    * @param String to use as a base for ID generation.
+    * @param name - String to use as a base for ID generation.
     * @return Unique ID as a String.
     */
     String generateUniqueQuizID(String name) throws RemoteException;
@@ -48,7 +48,7 @@ public interface Compute extends Remote {
     * Sends a question as a String to the QuizServer to create an instance of a 
     * Question object.
     * 
-    * @param String that is passed as a parameter when creating an instance of a 
+    * @param q - String that is passed as a parameter when creating an instance of a 
     * Question object.
     */
     void addQuestion(String q) throws RemoteException;
@@ -59,7 +59,7 @@ public interface Compute extends Remote {
     * Sends option to the QuizServer as a String to the server to add to options 
     * List in the Question object.
     * 
-    * @param String to add as a Question option.
+    * @param str - String to add as a Question option.
     */    
     void addOption(String str) throws RemoteException;
 
@@ -68,7 +68,7 @@ public interface Compute extends Remote {
     * 
     * Sends character to the QuizServer to set as the correct option.
     *
-    * @param The character that represents the correct option for that Question.
+    * @param c - The character that represents the correct option for that Question.
     */
     void setCorrect(char c) throws RemoteException;
 
@@ -113,7 +113,7 @@ public interface Compute extends Remote {
     * Searches for pre-existing player name.
     * 
     * @return True if user already exists, false if there is no such user.
-    * @param The String of the name to be searched for.
+    * @param name - The String of the name to be searched for.
     */
     boolean searchUser(String name) throws RemoteException;
 
@@ -122,7 +122,7 @@ public interface Compute extends Remote {
     * 
     * A list of Strings is returned from the client, containing the player data to be recorded.
     * 
-    * @param The list of Strings:  list(0) username, list(1) name, list(2) email address.
+    * @param list - The list of Strings:  list(0) username, list(1) name, list(2) email address.
     */
     void enterPlayerData(List<String> list) throws RemoteException;
 
@@ -139,7 +139,7 @@ public interface Compute extends Remote {
     * Quiz Player client program.
     *
     * Server returns 'question' part of question in use.
-    * @param The question number (0 - 9)
+    * @param questionNumber - The question number (0 - 9)
     * @return The question as a String.
     */
     String getQuestionString(int questionNumber) throws RemoteException;
@@ -150,7 +150,7 @@ public interface Compute extends Remote {
     * Server receives an array of chars and then calculates a score by comparing to 
     * an array of correct answer chars.
     * 
-    * @param An array of characters for the player's answers, in order from the first 
+    * @param charArray - An array of characters for the player's answers, in order from the first 
     * to last questions.
     * @return The number of correct answers given.
     */
