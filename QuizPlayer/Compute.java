@@ -95,6 +95,7 @@ public interface Compute extends Remote {
     * 
     * @param An array of characters for the player's answers, in order from the first 
     * to last questions.
+    * @return The number of correct answers given.
     */
-    void sendAnswers(char[] charArray) throws RemoteException;
+    int compareAnswers(char[] charArray) throws RemoteException;
 }

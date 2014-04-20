@@ -31,8 +31,8 @@ public class QuizPlayer {
 		}
 
 		play();
-		sendAnswers();
-		System.out.println("Thank you for playing! We will email you if you have won!");
+		int finalScore = sendAnswers();
+		System.out.println("Thank you for playing! Your score is " + finalScore + ".");
 	}
 
 	private String enterName(){
@@ -153,7 +153,7 @@ public class QuizPlayer {
 		String chosenQuiz = "";
 
 		while (!chosen){
-			System.out.println("Please enter an ID (4 letters + number) to play the corresponding quiz:");
+			System.out.print("Please enter a Quiz ID (4 letters + number):");
 			chosenQuiz = in.nextLine();
 			chosenQuiz = chosenQuiz.toUpperCase();
 			System.out.println("Play " + chosenQuiz + "?");
@@ -220,7 +220,7 @@ public class QuizPlayer {
 
 		this.upperIntBound = options.size();
 		System.out.println("\r\n" + question);
-		System.out.println(listToString(options) + "\r\n");
+		System.out.println(listToString(options));
 		char answer = enterAnswer();
 		this.answers[questionNumber] = answer;
 	}
@@ -242,11 +242,13 @@ public class QuizPlayer {
 		return answer;
 	}
 
-	private void sendAnswers(){
+	private int sendAnswers(){
+		int score = 0;
+
 		try {
 			Remote service = Naming.lookup("//127.0.0.1:1099/quiz");
 			Compute compute = (Compute) service;
-			compute.sendAnswers(answers);
+			score = compute.compareAnswers(answers);
 		} catch (MalformedURLException ex) {
 			ex.printStackTrace();
 		} catch (RemoteException ex) {
@@ -254,6 +256,8 @@ public class QuizPlayer {
 		} catch (NotBoundException ex) {
 			ex.printStackTrace();
 		}
+
+		return score;
 	}
 
     private String listToString(List<String> strings){
